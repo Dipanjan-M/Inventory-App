@@ -3,6 +3,10 @@ require_once('../../private/initialize.php');
 
 require_login();
 
+$in_stock = Analytics::get_stock_value();
+
+$sale_total = Analytics::get_total_sale();
+
 ?>
 
 <!DOCTYPE html>
@@ -190,9 +194,11 @@ require_login();
 						<h4>Last 7-days sale</h4>
 						<canvas id="myChart1" width="auto" height="250"></canvas>
 					</div>
-					<div class="col-sm-6 text-center">
-						<h4>Sale by category</h4>
-						<canvas id="myChart2" width="auto" height="250"></canvas>
+					<div class="col-sm-6">
+						<h4 class="display-4">Total stock Value</h4>
+                        <h5><i class="fas fa-rupee-sign"></i> <?php echo $in_stock; ?></h5>
+                        <h4 class="display-4">Total sale</h4>
+                        <h5><i class="fas fa-rupee-sign"></i> <?php echo $sale_total; ?></h5>
 					</div>
 				</div>
 			</div>
@@ -207,6 +213,7 @@ require_login();
 	<script src="assets/JS/common_js.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {
+            get_last_7ds_analytics();
 			var d = new Date();
 			var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 			var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];

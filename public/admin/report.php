@@ -3,6 +3,10 @@ require_once('../../private/initialize.php');
 
 require_login();
 
+$in_stock = Analytics::get_stock_value();
+
+$sale_total = Analytics::get_total_sale();
+
 ?>
 
 <!DOCTYPE html>
@@ -38,12 +42,22 @@ require_login();
 
   	<div class="container-fluid">
 		<div class="row pt-3">
-			<div class="col-sm-4">
+			<div class="col-sm-3">
 				<div class="text-center">
 					<h2><i class="fas fa-flag-checkered text-danger"></i> Reports</h2>
 				</div><br>
 			</div>
-			<div class="col-sm-8"></div>
+			<div class="col-sm-9">
+				<div class="text-center">
+					<h3 class="display-4">Inventory Reports</h3>
+					<div class="text-left">
+					    <h4>Total stock Value</h4>
+                        <h5><i class="fas fa-rupee-sign"></i> <?php echo $in_stock; ?></h5>
+                        <h4>Total sale</h4>
+                        <h5><i class="fas fa-rupee-sign"></i> <?php echo $sale_total; ?></h5>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 

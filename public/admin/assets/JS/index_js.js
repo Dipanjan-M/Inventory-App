@@ -321,87 +321,89 @@ function add_manual_order() {
                             </div><br>`;
 }
 
-
-
-var ctx1 = document.getElementById('myChart1').getContext('2d');
-var myChart1 = new Chart(ctx1, {
-    type: 'bar',
-    data: {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange', 'other'],
-        datasets: [{
-            label: '# of Votes',
-            data: [12, 19, 3, 5, 2, 3, 8],
-            backgroundColor: [
-                'rgba(244, 67, 54, 0.5)',
-                'rgba(54, 162, 235, 0.5)',
-                'rgba(255, 225, 59, 0.5)',
-                'rgba(75, 192, 120, 0.5)',
-                'rgba(153, 102, 255, 0.5)',
-                'rgba(255, 152, 0, 0.5)',
-                'rgba(244, 114, 208, 0.5)'
-
-            ],
-            borderColor: [
-                'rgba(244, 67, 54, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 225, 59, 1)',
-                'rgba(75, 192, 120, 1)',
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 152, 0, 1)',
-                'rgba(244, 114, 208, 1)'
-
-            ],
-            borderWidth: 1
-        }]
-    },
-    options: {
-        scales: {
-            yAxes: [{
-                ticks: {
-                    beginAtZero: true
+function get_last_7ds_analytics() {
+    $.get("last_7_days_sale.php", function(data, status) {
+        var msgs = JSON.parse(data);
+        // console.log(msgs);
+        var ctx1 = document.getElementById('myChart1').getContext('2d');
+        var myChart1 = new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: msgs['labels'],
+                datasets: [{
+                    label: 'Sales Per Day',
+                    data: msgs['data'],
+                    backgroundColor: [
+                        'rgba(244, 67, 54, 0.5)',
+                        'rgba(54, 162, 235, 0.5)',
+                        'rgba(255, 225, 59, 0.5)',
+                        'rgba(75, 192, 120, 0.5)',
+                        'rgba(153, 102, 255, 0.5)',
+                        'rgba(255, 152, 0, 0.5)',
+                        'rgba(244, 114, 208, 0.5)'
+                    ],
+                    borderColor: [
+                        'rgba(244, 67, 54, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 225, 59, 1)',
+                        'rgba(75, 192, 120, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 152, 0, 1)',
+                        'rgba(244, 114, 208, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
                 }
-            }]
-        }
-    }
-});
+            }
+        });
+    });
+}
 
 
-var ctx2 = document.getElementById('myChart2').getContext('2d');
-var myChart2 = new Chart(ctx2, {
-    type: 'pie',
-    data: {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange', 'other'],
-        datasets: [{
-            label: '# of Votes',
-            data: [12, 19, 3, 5, 2, 3, 8],
-            backgroundColor: [
-                'rgba(244, 67, 54, 0.5)',
-                'rgba(54, 162, 235, 0.5)',
-                'rgba(255, 225, 59, 0.5)',
-                'rgba(75, 192, 120, 0.5)',
-                'rgba(153, 102, 255, 0.5)',
-                'rgba(255, 152, 0, 0.5)',
-                'rgba(244, 114, 208, 0.5)'
-            ],
-            borderColor: [
-                'rgba(244, 67, 54, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 225, 59, 1)',
-                'rgba(75, 192, 120, 1)',
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 152, 0, 1)',
-                'rgba(244, 114, 208, 1)'
-            ],
-            borderWidth: 1
-        }]
-    },
-    options: {
-        scales: {
-            yAxes: [{
-                ticks: {
-                    beginAtZero: true
-                }
-            }]
-        }
-    }
-});
+// var ctx2 = document.getElementById('myChart2').getContext('2d');
+// var myChart2 = new Chart(ctx2, {
+//     type: 'pie',
+//     data: {
+//         labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange', 'other'],
+//         datasets: [{
+//             label: '# of Votes',
+//             data: [12, 19, 3, 5, 2, 3, 8],
+//             backgroundColor: [
+//                 'rgba(244, 67, 54, 0.5)',
+//                 'rgba(54, 162, 235, 0.5)',
+//                 'rgba(255, 225, 59, 0.5)',
+//                 'rgba(75, 192, 120, 0.5)',
+//                 'rgba(153, 102, 255, 0.5)',
+//                 'rgba(255, 152, 0, 0.5)',
+//                 'rgba(244, 114, 208, 0.5)'
+//             ],
+//             borderColor: [
+//                 'rgba(244, 67, 54, 1)',
+//                 'rgba(54, 162, 235, 1)',
+//                 'rgba(255, 225, 59, 1)',
+//                 'rgba(75, 192, 120, 1)',
+//                 'rgba(153, 102, 255, 1)',
+//                 'rgba(255, 152, 0, 1)',
+//                 'rgba(244, 114, 208, 1)'
+//             ],
+//             borderWidth: 1
+//         }]
+//     },
+//     options: {
+//         scales: {
+//             yAxes: [{
+//                 ticks: {
+//                     beginAtZero: true
+//                 }
+//             }]
+//         }
+//     }
+// });

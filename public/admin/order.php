@@ -67,9 +67,33 @@ require_login();
 		.big-btn-search-order:hover {
 			color: #fff;
 		}
+
+		.all-orders-list {
+			display: none;
+		}
+
+		.search-order {
+			display: none;
+		}
+
+		hr {
+    		margin-top: .3rem;
+    		margin-bottom: .5rem;
+		}
+
+		.final-bill {
+    		position: absolute;
+    		top: 0px;
+    		width: 100%;
+    		z-index: 100;
+    		background-color: #fff;
+    		display: none;
+		}
 	</style>
 </head>
 <body>
+	<div class="final-bill p-3">
+	</div>
 	<?php 
     	include("core/menu.php"); 
     	include("core/header.php");
@@ -101,85 +125,37 @@ require_login();
               				<i class="fas fa-times text-danger" data-toggle="tooltip" data-placement="left" title="close"></i>
             			</span>
           			</div><br>
-          			<table border="1" align="center" style="width: 100%;" id="all-orders">
-          				<tr align="center">
-          					<th width="40%">Customer</th>
-          					<th>
-          					    Orders
-          					    <table style="width: 100%;">
-          					    	<tr align="center">
-          					    		<td width="45%">Name</td>
-          					    		<td width="20%">Price</td>
-          					    		<td width="20%">Tax</td>
-          					    		<td width="15%">Qty.</td>
-          					    	</tr>
-          					    </table>
-          					</th>
-          					<th>Action</th>
-          				</tr>
-          				<tr align="center">
-          					<td width="40%" align="left" style="padding-left: 1vw;">
-          						Dipanjan Maity <br>
-          						108, Kshetra Banerjee Lane, Shibpur, Howrah - 711102, West Bengal, India <br>
-          						+91-8910646211 <br>
-          						dipanjanmaity08@gmail.com <br>
-          						Bill Id : wQtpr-1162354789 <br>
-          						Date : 2021-02-09
-          					</td>
-          					<td>
-          					  	<table style="width: 100%;">
-          					  		<tr align="center">
-          					  			<td width="45%">Smart obd tool</td>
-          					  			<td width="20%">5000.00</td>
-          					  			<td width="20%">14.00%</td>
-          					  			<td width="15%">1</td>
-          					  		</tr>
-          					  		<tr align="center">
-          					  			<td width="45%">Hand gloves</td>
-          					  			<td width="20%">150.00</td>
-          					  			<td width="20%">5.00%</td>
-          					  			<td width="15%">5</td>
-          					  		</tr>
-          					  		<tr align="center">
-          					  			<td width="45%">Something not listed</td>
-          					  			<td width="20%">120.00</td>
-          					  			<td width="20%">4.00%</td>
-          					  			<td width="15%">10</td>
-          					  		</tr>
-          					  		<tr align="center">
-          					  			<td width="45%">Bike Engine Oil</td>
-          					  			<td width="20%">980.00</td>
-          					  			<td width="20%">18.00%</td>
-          					  			<td width="15%">1</td>
-          					  		</tr>
-          					  	</table>
-          				    </td>
-          				    <td>
-          				    	<i class="fas fa-file-invoice text-primary" data-toggle="tooltip" title="Get Invoice" style="font-size: 2em;cursor: pointer;"></i>
-          				    </td>
-          				</tr>
-          			</table>
+          			<table border="1" align="center" style="width: 100%;" id="all-orders"></table>
+				</div>
+
+				<!-- Div for order searching -->
+				<div class="search-order p-3">
+					<div style="text-align: right;font-size: 20px;">
+        			 	<span style="float: left;"><h4 style="padding-left: 30vw;">Search Orders </h4></span>
+        				<span style="cursor: pointer;" onclick="$('.search-order').css('display','none');">
+              				<i class="fas fa-times text-danger" data-toggle="tooltip" data-placement="left" title="close"></i>
+            			</span>
+          			</div><br>
+					<form action="#" method="post" id="search-bill-form">
+						<div class="row">
+							<div class="col-sm-8">
+								<input type="text" id="bill_id_inp" name="bill_id" placeholder="Enter Bill Id" class="form-control" required="">
+							</div>
+							<div class="col-sm-4 text-center">
+								<input type="submit" class="btn btn-primary" name="submit" value="Search">
+							</div>
+						</div>
+					</form>
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<script type="text/javascript">
-		function open_orders_list() {
-			$('.all-orders-list').css("display", "block");
-			get_all_orders();
-		}
-
-		function get_all_orders() {
-			$.get("fetch_all_orders.php", function(data, status) {
-				console.log(data);
-			});
-		}
-	</script>
-
+	<script src="assets/JS/order_js.js"></script>
 	<script src="assets/JS/common_js.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {
+			open_orders_list();
     		$('[data-toggle="tooltip"]').tooltip();
     		var session_msg = '<?php echo $session->message(); ?>';
     		if (session_msg != '') {

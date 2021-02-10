@@ -16,6 +16,7 @@ foreach ($customers as $customer) {
 	$joined_result['customer_details']['mobile'] = $customer->cust_mobile;
 	$joined_result['customer_details']['address'] = $customer->get_full_address();
 	$joined_result['customer_details']['bill_id'] = $customer->bill_id;
+	$joined_result['customer_details']['date'] = $customer->visitedAt;
 	$orders = Sale::find_by_bill_id($customer->bill_id);
 	$joined_result['customer_details']['orders'] = $orders;
 	$orders_to_return[] = $joined_result;

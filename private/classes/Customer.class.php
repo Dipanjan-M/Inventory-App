@@ -37,7 +37,7 @@ class Customer extends DbObject {
   }
 
   public function get_full_address() {
-  	return $this->hfsl . ', ' . $this->avt . ', ' . $this->district . '-' . $this->zip . ', ' . $this->state . ', ' .$this->country;
+  	return $this->hfsl . ', ' . $this->avt . '<br>' . $this->district . '-' . $this->zip . ', ' . $this->state . ', ' .$this->country;
   }
 
   // public function __destruct() {
