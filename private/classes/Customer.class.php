@@ -4,7 +4,8 @@ class Customer extends DbObject {
 	static protected $table_name = "customer";
   	static protected $db_columns = [	
   		'id', 
-  		'bill_id', 
+  		'bill_id',
+      'discount', 
   		'cust_name', 
   		'cust_mobile', 
   		'cust_email', 
@@ -19,6 +20,7 @@ class Customer extends DbObject {
 
   	public $id;
   	public $bill_id;
+    public $discount;
   	public $cust_name;
   	public $cust_mobile;
   	public $cust_email;
@@ -59,6 +61,10 @@ class Customer extends DbObject {
     	$this->errors[] = "Bill ID can't be blank.";
     } elseif(!has_unique_bill_id($this->bill_id, $this->id ?? 0)) {
     	$this->errors[] = "Bill ID isn't unique.";
+    }
+
+    if(!preg_match('[^\d+(.{1})\d{2}$]' ,$this->discount)) {
+      $this->errors[] = "Discount not is in valid format. Invalid format = .00, .0, 12, 12.0, 0.0. 10e1 etc.";
     }
 
     if(!is_blank($this->cust_email)) {
@@ -112,6 +118,17 @@ class Customer extends DbObject {
     $obj_array = static::find_by_sql($sql);
     if(!empty($obj_array)) {
       return array_shift($obj_array);
+    } else {
+      return false;
+    }
+  }
+
+  static public function fetch_by_date_visited($date) {
+    $sql = "SELECT * FROM " . static::$table_name . " ";
+    $sql .= "WHERE visitedAt='" . self::$database->escape_string($date) . "'";
+    $obj_array = static::find_by_sql($sql);
+    if(!empty($obj_array)) {
+      return $obj_array;
     } else {
       return false;
     }

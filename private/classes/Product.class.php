@@ -3,10 +3,11 @@
 class Product extends DbObject {
 
   static protected $table_name = "products";
-  static protected $db_columns = ['id', 'p_name', 'unit_price', 'total_stock', 'category', 'updatedAt', 'createdAt'];
+  static protected $db_columns = ['id', 'p_name', 'main_price', 'unit_price', 'total_stock', 'category', 'updatedAt', 'createdAt'];
 
   public $id;
   public $p_name;
+  public $main_price;
   public $unit_price;
   public $total_stock;
   public $category;
@@ -15,8 +16,9 @@ class Product extends DbObject {
 
   public function __construct($args=[]) {
     $this->p_name = $args['p_name'] ?? '';
-    $this->unit_price = $args['unit_price'] ?? '';
-    $this->total_stock = $args['total_stock'] ?? '';
+    $this->main_price = $args['main_price'] ?? '0.00';
+    $this->unit_price = $args['unit_price'] ?? '0.00';
+    $this->total_stock = $args['total_stock'] ?? '0';
     $this->category = $args['category'] ?? '';
     $this->updatedAt = date("d-m-Y h:i:s a");
     $this->createdAt = date("d-m-Y h:i:s a");
@@ -56,6 +58,12 @@ class Product extends DbObject {
       $this->errors[] = "Product name must be between 4 and 255 characters.";
     } elseif (!has_unique_prod_name($this->p_name, $this->id ?? 0)) {
     	$this->errors[] = "No two product can have same name.";
+    }
+
+    if(is_blank($this->main_price)) {
+      $this->errors[] = "Buying price cannot be blank.";
+    } elseif((float)$this->main_price <= 0.00) {
+      $this->errors[] = "Buying price must be greater than 0.";
     }
 
     if(is_blank($this->unit_price)) {

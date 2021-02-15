@@ -8,7 +8,7 @@
     box-shadow: 4px 4px 11px 3px rgb(148 148 148 / 60%);
     display: none;
     /*max-height: 46vw;*/
-    /*overflow: auto;*/
+    overflow: auto;
 }
 
 #search-input {

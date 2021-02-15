@@ -9,6 +9,7 @@ if(is_post_request()) {
 	$cust_args['bill_id'] = generateRandomString(5) . '-' . time();
 	$common_id = $cust_args['bill_id'];
 	// $cust_args['bill_id'] = gen_uuid();
+	$cust_args['discount'] = $_POST['order']['discount'];
 	$cust_args['cust_name'] = $_POST['order']['customer_name'];
 	$cust_args['cust_mobile'] = $_POST['order']['customer_mobile'];
 	$cust_args['cust_email'] = $_POST['order']['customer_email'];
@@ -37,6 +38,7 @@ if(is_post_request()) {
 			$sale_args['bill_id'] = $cust_args['bill_id'];
 			$sale_args['p_name'] = $product['name'];
 			$sale_args['quantity'] = $product['quantity'];
+			$sale_args['main_price'] = $product['main_price'];
 			$sale_args['unit_price'] = $product['unit_price'];
 			$sale_args['tax'] = $product['tax'];
 			$all_sale[] = new Sale($sale_args);
@@ -62,6 +64,7 @@ if(is_post_request()) {
 		$db_sales = Sale::find_by_bill_id($common_id);
 		$db_confirm_bill['billing_customer']['id'] = $db_customer->id;
 		$db_confirm_bill['billing_customer']['bill_id'] = $db_customer->bill_id;
+		$db_confirm_bill['billing_customer']['discount'] = $db_customer->discount;
 		$db_confirm_bill['billing_customer']['name'] = $db_customer->cust_name;
 		$db_confirm_bill['billing_customer']['phone'] = $db_customer->cust_mobile;
 		$db_confirm_bill['billing_customer']['email'] = $db_customer->cust_email;

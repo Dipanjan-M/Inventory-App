@@ -3,6 +3,7 @@
 class Search_product extends DbObject {
 	public $id;
 	public $p_name;
+	public $main_price;
 	public $unit_price;
 	public $total_stock;
 	public $gst_percentage;

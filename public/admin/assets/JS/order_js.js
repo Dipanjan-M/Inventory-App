@@ -58,6 +58,7 @@ function get_all_orders() {
                               </tr>`;
         });
         orders_table.innerHTML = res_string;
+        $('#spinners-all').remove();
     });
 }
 
@@ -73,8 +74,12 @@ function get_bill(b_id) {
         data: { bill_id: b_id },
         dataType: "text",
         success: function(data) {
-            var msgs = JSON.parse(data);
-            generate_bill_to_print(msgs);
+            try {
+                var msgs = JSON.parse(data);
+                generate_bill_to_print(msgs);
+            } catch(e) {
+                alert(data);
+            }
         },
         error: function(err) {
             alert(err);
@@ -83,8 +88,9 @@ function get_bill(b_id) {
 }
 
 function generate_bill_to_print(data) {
-    var taxed_table = `<table align="center" width="100%">
-                                    <tr>
+    var discount = parseFloat(data['billing_customer']['discount']);
+    var taxed_table = `<table border="1" width="100%">
+                                    <tr align="center">
                                         <th width="50%">Particulars</th>
                                         <th>Unit Price</th>
                                         <th>Qty.</th>
@@ -92,8 +98,8 @@ function generate_bill_to_print(data) {
                                         <th>Total</th>
                                     </tr>`;
 
-    var normal_table = `<table align="center" width="100%">
-                                    <tr>
+    var normal_table = `<table border="1" width="100%">
+                                    <tr align="center">
                                         <th width="60%">Particulars</th>
                                         <th>Unit Price</th>
                                         <th>Qty.</th>
@@ -107,31 +113,33 @@ function generate_bill_to_print(data) {
         var item_tax = parseFloat(bill['tax']);
         var item_cost_price = (item_unit_price * 100) / (100 + item_tax);
         var item_total_price = item_unit_price * item_quantity;
-        taxed_table += `<tr>
+        taxed_table += `<tr align="center">
                                     <td width="50%">` + item_name + `</td>
                                     <td>` + item_cost_price.toFixed(2) + `</td>
                                     <td>` + item_quantity + `</td>
                                     <td>` + item_tax.toFixed(2) + `</td>
-                                    <td>` + item_total_price.toFixed(2) + `<br> (rounded)</td>
+                                    <td align="right" style="padding-right: .5vw;">` + item_total_price.toFixed(2) + `</td>
                                 </tr>`;
-        normal_table += `<tr>
+        normal_table += `<tr align="center">
                                     <td width="60%">` + item_name + `</td>
                                     <td>` + item_unit_price.toFixed(2) + `</td>
                                     <td>` + item_quantity + `</td>
-                                    <td>` + item_total_price.toFixed(2) + `</td>
+                                    <td align="right" style="padding-right: .5vw;">` + item_total_price.toFixed(2) + `</td>
                                 </tr>`;
         grand_total += item_total_price;
     });
-    taxed_table += `<tr>
-                                <th colspan="4" style="padding-top: 9vw;">Grand Total</th>
-                                <th style="padding-top: 7vw;">` + grand_total.toFixed(2) + `<br>(rounded)</th>
-                            </tr>
-                            </table>`;
-    normal_table += `<tr>
-                                <th colspan="3" style="padding-top: 10vw;">Grand Total</th>
-                                <th style="padding-top: 10vw;">` + grand_total.toFixed(2) + `<br>(rounded)</th>
-                            </tr>
-                            </table>`;
+    taxed_table += `<tr align="center">
+                        <td colspan="4"><strong>Grand Total</strong></td>
+                        <td align="right" style="padding-right: .5vw;">` + grand_total.toFixed(2) + `<br>(-) `+discount.toFixed(2)+`
+                        <br><strong>`+ (grand_total-discount).toFixed(2) +`</strong><br>(rounded)</td>
+                    </tr>
+                    </table>`;
+    normal_table += `<tr align="center">
+                        <td colspan="3"><strong>Grand Total</strong></td>
+                        <td align="right" style="padding-right: .5vw;">` + grand_total.toFixed(2) + `<br>(-) `+discount.toFixed(2)+`
+                        <br><strong>`+ (grand_total-discount).toFixed(2) +`</strong><br>(rounded)</td>
+                    </tr>
+                    </table>`;
 
     var the_html = `<div id="final-bill-head">
                                 <div class="row">

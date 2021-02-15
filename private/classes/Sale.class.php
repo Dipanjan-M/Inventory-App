@@ -6,7 +6,8 @@ class Sale extends DbObject {
 		'id', 
 		'bill_id', 
 		'p_name', 
-		'quantity', 
+		'quantity',
+		'main_price', 
 		'unit_price',
 		'tax',
 		'addedAt'	
@@ -16,6 +17,7 @@ class Sale extends DbObject {
 	public $bill_id;
 	public $p_name;
 	public $quantity;
+	public $main_price;
 	public $unit_price;
 	public $tax;
 	public $addedAt;
@@ -32,6 +34,12 @@ class Sale extends DbObject {
 
 		if(is_blank($this->p_name)) {
 			$this->errors[] = "Product name can't be blank.";
+		}
+
+		if(is_blank($this->main_price)) {
+			$this->errors[] = "Price per unit for " . $this->p_name . "can't be blank.";
+		} elseif(!preg_match('[^\d+(.{1})\d{2}$]', $this->main_price)) {
+			$this->errors[] = "Price per unit for " . $this->p_name . " not is in valid format. Invalid format = .00, .0, 12, 12.0 etc.";
 		}
 
 		if(is_blank($this->unit_price)) {

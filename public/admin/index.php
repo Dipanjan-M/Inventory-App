@@ -3,9 +3,10 @@ require_once('../../private/initialize.php');
 
 require_login();
 
-$in_stock = Analytics::get_stock_value();
+$in_stock = Analytics::get_stock_value() ?? '0.00';
 
-$sale_total = Analytics::get_total_sale();
+$sale_total = Analytics::get_total_sale() ?? '0.00';
+
 
 ?>
 
@@ -37,6 +38,11 @@ $sale_total = Analytics::get_total_sale();
 	<!-- Local external style sheet -->
 	<link rel="stylesheet" href="assets/CSS/style_index.css">
 	<link rel="stylesheet" href="assets/CSS/extra_style_index.css">
+    <style>
+        #low-stock {
+            display: none;
+        }
+    </style>
 </head>
 <body>
 	<div id="status-area"></div>
@@ -136,6 +142,24 @@ $sale_total = Analytics::get_total_sale();
         				</div>
         				<hr style="margin-top: .2rem;">
         				<div id="all-orders"></div>
+                        <br>
+                        <div class="row">
+                            <div class="col-sm">
+                                <label for="discount"><i class="fas fa-rupee-sign"></i> Add Discount (if any)</label>
+                            </div>
+                            <div class="col-sm">
+                                <input type="number" name="order[discount]" class="form-control" id="discount-inp" min="0" step="0.01" placeholder="0.00" value="0.00">
+                            </div>
+                        </div><br>
+                        <div class="row">
+                            <div class="col-sm-8">
+                                <h3 id="total-show" class="text-success"></h3>
+                            </div>
+                            <div class="col-sm-4 text-center">
+                                <button class="btn btn-primary" id="total-calc-btn">Total</button>
+                            </div>
+                        </div>
+                        <br>
         				<div class="text-center">
         					<input type="submit" name="submit" class="btn btn-primary" value="Place order">
         				</div>
@@ -199,21 +223,27 @@ $sale_total = Analytics::get_total_sale();
                         <h5><i class="fas fa-rupee-sign"></i> <?php echo $in_stock; ?></h5>
                         <h4 class="display-4">Total sale</h4>
                         <h5><i class="fas fa-rupee-sign"></i> <?php echo $sale_total; ?></h5>
+                        <br>
+                        <div class="bg-light p-3" id="low-stock">
+                            <h2>
+                                <i class="fas fa-exclamation-triangle text-danger" style="font-size: 40px;"></i>
+                                Low stock detected !! Go to <a href="products.php">product</a> section to check out.
+                            </h2>
+                        </div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<script type="text/javascript">
-		
-	</script>
-
 	<script src="assets/JS/index_js.js"></script>
 	<script src="assets/JS/common_js.js"></script>
 	<script type="text/javascript">
+        $(window).resize(function(){
+            $('.create-order').css('max-height', $(window).height()-25);
+        });
 		$(document).ready(function() {
-            get_last_7ds_analytics();
+            $('.create-order').css('max-height', $(window).height()-24);
 			var d = new Date();
 			var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 			var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -230,6 +260,8 @@ $sale_total = Analytics::get_total_sale();
         							<strong>System says : </strong> `+session_msg+`</div>`;
         		<?php $session->clear_message(); ?>
     		}
+            get_last_7ds_analytics();
+            check_stock();
 		});
 	</script>
 </body>

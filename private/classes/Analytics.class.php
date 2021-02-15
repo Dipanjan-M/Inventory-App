@@ -2,6 +2,18 @@
 
 class Analytics extends DbObject {
 
+	public static function check_for_low_stock() {
+		$sql = "SELECT * FROM `products` WHERE `products`.`total_stock`<10;";
+		$result = Self::$database->query($sql);
+		$products = [];
+		if($result->num_rows > 0) {
+			while($row = $result->fetch_assoc()) {
+				$products[] = $row;
+			}
+		}
+		return $products;
+	}
+
 	public static function get_stock_value() {
 		$sql = "SELECT SUM(`products`.`unit_price`*`products`.`total_stock`) AS `stock_val` FROM `products`;";
 		$result = Self::$database->query($sql);

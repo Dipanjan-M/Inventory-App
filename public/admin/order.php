@@ -112,20 +112,34 @@ require_login();
         		</div><br>
         		<div class="text-center">
          			<button class="btn big-btn-search-order" onclick="open_search_order();">
-         				<h6>Search order <i class="fas fa-plus-square"></i></h6>
+         				<h6>Search order <i class="fas fa-search"></i></h6>
          			</button>
         		</div>
 			</div>
 			<div class="col-sm-9">
 				<!--  Div for order listing -->
-				<div class="all-orders-list p-3">
+				<div class="all-orders-list">
 					<div style="text-align: right;font-size: 20px;">
         			 	<span style="float: left;"><h4 style="padding-left: 30vw;">All Orders </h4></span>
         				<span style="cursor: pointer;" onclick="$('.all-orders-list').css('display','none');">
               				<i class="fas fa-times text-danger" data-toggle="tooltip" data-placement="left" title="close"></i>
             			</span>
           			</div><br>
-          			<table border="1" align="center" style="width: 100%;" id="all-orders"></table>
+          			<div style="overflow: auto;" id="table-holder">
+          				<div id="spinners-all" class="text-center">
+          					<div class="spinner-border text-muted"></div>
+                           	<div class="spinner-border text-primary"></div>
+                            <div class="spinner-border text-success"></div>
+                            <div class="spinner-border text-info"></div>
+                            <div class="spinner-border text-warning"></div>
+                            <div class="spinner-border text-danger"></div>
+                            <div class="spinner-border text-secondary"></div>
+                            <div class="spinner-border text-dark"></div>
+                            <div class="spinner-border text-light"></div>
+                        </div>
+          				<table border="1" align="center" style="width: 100%;" id="all-orders" ></table>
+          			</div>
+          			<!-- <table border="1" align="center" style="width: 100%;" id="all-orders" ></table> -->
 				</div>
 
 				<!-- Div for order searching -->
@@ -154,14 +168,13 @@ require_login();
 	<script src="assets/JS/order_js.js"></script>
 	<script src="assets/JS/common_js.js"></script>
 	<script type="text/javascript">
+		$(window).resize(function(){
+			$('#table-holder').css("max-height", $(window).height()-150);
+		});
 		$(document).ready(function() {
+			$('#table-holder').css("max-height", $(window).height()-150);
 			open_orders_list();
     		$('[data-toggle="tooltip"]').tooltip();
-    		var session_msg = '<?php echo $session->message(); ?>';
-    		if (session_msg != '') {
-        		alert("System says : " + session_msg);
-        		<?php $session->clear_message(); ?>
-    		}
 		});
 	</script>
 </body>

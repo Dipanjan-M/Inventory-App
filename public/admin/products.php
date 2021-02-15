@@ -61,7 +61,12 @@ require_login();
          			<button class="btn big-btn-add-prod" onclick="open_add_product();">
          				<h6>Add Products <i class="fas fa-plus-square"></i></h6>
          			</button>
-        		</div>
+        		</div><br>
+            <div class="text-center">
+              <button class="btn big-btn-chk-stk" onclick="edit_low_stocks();">
+                <h6>Low stocks <i class="fas fa-exclamation-triangle"></i></h6>
+              </button>
+            </div>
 			</div>
 			<div class="col-sm-9">
 				<!--  Div for product listing -->
@@ -90,19 +95,26 @@ require_login();
           				<input type="text" name="product[p_name]" class="form-control" required=""><br>
           				<div class="row">
           					<div class="col-sm">
-          						<label for="unit-price">Enter unit price of the product <sup class="text-danger">*</sup></label><br>
+          						<label for="unit-price">Enter selling price per unit <sup class="text-danger">*</sup></label><br>
           						<input type="number" name="product[unit_price]" placeholder="0.00" min="0" step="0.01" required="" class="form-control">
           					</div>
           					<div class="col-sm">
-          						<label for="cat-name">Select category <sup class="text-danger">*</sup></label><br>
+          						<label for="cat-name">Select tax category <sup class="text-danger">*</sup></label><br>
           						<select name="product[category]" id="sel-prod-cat" class="form-control">
           							
           						</select>
           					</div>
           				</div><br>
-          				<label for="stock">Enter the total number of products <sup class="text-danger">*</sup></label><br>
-          				<input type="number" name="product[total_stock]" min="0" step="1" class="form-control" placeholder="0" required="">
-          				<br>
+                  <div class="row">
+                    <div class="col-sm">
+                      <label for="main-price">Enter buying price per unit <sup class="text-danger">*</sup></label><br>
+                      <input type="number" name="product[main_price]" placeholder="0.00" min="0" step="0.01" required="" class="form-control">
+                    </div>
+                    <div class="col-sm">
+                      <label for="stock">Enter the total number of products <sup class="text-danger">*</sup></label><br>
+                      <input type="number" name="product[total_stock]" min="0" step="1" class="form-control" placeholder="0" required="">
+                    </div>
+                  </div><br>
           				<div class="text-center">
           					<button class="btn btn-success" type="submit" name="submit" id="btn-add-prod">
           						Add <i class="fas fa-plus-square"></i>
@@ -126,6 +138,7 @@ require_login();
 			</div>
 		</div>
 	</div>
+
 	<script src="assets/JS/products.js"></script>
 	<script src="assets/JS/common_js.js"></script>
 	<script type="text/javascript">

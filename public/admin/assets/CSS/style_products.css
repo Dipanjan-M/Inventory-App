@@ -43,10 +43,28 @@
     box-shadow: 4px 4px 11px 3px rgb(148 148 148 / 60%);
 }
 
+.big-btn-chk-stk {
+    width: 60%;
+    border-radius: 0px;
+    background: #f85032;
+    /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #e73827, #f85032);
+    /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #e73827, #f85032);
+    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    text-decoration: none;
+    color: #fff;
+    box-shadow: 4px 4px 11px 3px rgb(148 148 148 / 60%);
+}
+
 .big-btn-lst-prod:hover {
     color: #fff;
 }
 
 .big-btn-add-prod:hover {
+    color: #fff;
+}
+
+.big-btn-chk-stk:hover {
     color: #fff;
 }

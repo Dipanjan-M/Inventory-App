@@ -3,9 +3,9 @@ require_once('../../private/initialize.php');
 
 require_login();
 
-$in_stock = Analytics::get_stock_value();
+$in_stock = Analytics::get_stock_value() ?? '0.00';
 
-$sale_total = Analytics::get_total_sale();
+$sale_total = Analytics::get_total_sale() ?? '0.00';
 
 ?>
 
@@ -33,6 +33,53 @@ $sale_total = Analytics::get_total_sale();
 
 	<!-- Local external style sheet -->
 	<link rel="stylesheet" href="assets/CSS/style_index.css">
+	<style>
+		#general-report {
+			display: none;
+		}
+
+		#report-on-demand {
+			display: none;
+		}
+
+		.big-btn-gen-report {
+			width: 60%;
+			border-radius: 0px;
+    		background: #0f0c29;
+    		/* fallback for old browsers */
+    		background: -webkit-linear-gradient(to right, #24243e, #302b63, #0f0c29);
+    		/* Chrome 10-25, Safari 5.1-6 */
+    		background: linear-gradient(to right, #24243e, #302b63, #0f0c29);
+    		/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    		text-decoration: none;
+    		color: #fff;
+    		box-shadow: 4px 4px 11px 3px rgb(148 148 148 / 60%);
+    		padding-top: 1vw;
+		}
+
+		.big-btn-gen-report:hover {
+			color: #fff;
+		}
+
+		.big-btn-report-on-demand {
+			width: 60%;
+    		border-radius: 0px;
+    		background: #606c88;
+    		/* fallback for old browsers */
+    		background: -webkit-linear-gradient(to right, #3f4c6b, #606c88);
+    		/* Chrome 10-25, Safari 5.1-6 */
+    		background: linear-gradient(to right, #3f4c6b, #606c88);
+    		/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    		text-decoration: none;
+    		color: #fff;
+    		box-shadow: 4px 4px 11px 3px rgb(148 148 148 / 60%);
+    		padding-top: 1vw;
+		}
+
+		.big-btn-report-on-demand:hover {
+			color: #fff;
+		}
+	</style>
 </head>
 <body>
 	<?php 
@@ -46,24 +93,68 @@ $sale_total = Analytics::get_total_sale();
 				<div class="text-center">
 					<h2><i class="fas fa-flag-checkered text-danger"></i> Reports</h2>
 				</div><br>
+				<div class="text-center">
+          			<button class="btn big-btn-gen-report" onclick="get_gen_report();">
+            			<h6>Sale summery <i class="fas fa-clipboard-list"></i></h6>
+          			</button>
+        		</div><br>
+        		<div class="text-center">
+         			<button class="btn big-btn-report-on-demand" onclick="open_search_order();">
+         				<h6>Get report <i class="fas fa-search"></i></h6>
+         			</button>
+        		</div>
 			</div>
 			<div class="col-sm-9">
 				<div class="text-center">
-					<h3 class="display-4">Inventory Reports</h3>
-					<div class="text-left">
+					<!-- <h3 class="display-4">Inventory Reports</h3> -->
+					<div class="text-left p-3" id="general-report">
+						<div style="text-align: right;font-size: 20px;">
+        			 		<span style="float: left;"><h4 style="padding-left: 30vw;">Sale summery </h4></span>
+        					<span style="cursor: pointer;" onclick="$('#general-report').css('display','none');">
+              					<i class="fas fa-times text-danger" data-toggle="tooltip" data-placement="left" title="close"></i>
+            				</span>
+          				</div><br>
 					    <h4>Total stock Value</h4>
                         <h5><i class="fas fa-rupee-sign"></i> <?php echo $in_stock; ?></h5>
                         <h4>Total sale</h4>
                         <h5><i class="fas fa-rupee-sign"></i> <?php echo $sale_total; ?></h5>
 					</div>
+					<!-- Report on demand -->
+					<div class="p-3" id="report-on-demand">
+						<div style="text-align: right;font-size: 20px;">
+        			 		<span style="float: left;"><h4 style="padding-left: 30vw;">Get report by date</h4></span>
+        					<span style="cursor: pointer;" onclick="$('#report-on-demand').css('display','none');">
+              					<i class="fas fa-times text-danger" data-toggle="tooltip" data-placement="left" title="close"></i>
+            				</span>
+          				</div><br>
+          				<form action="get_report_by_date.php" method="post" id="get-report-form">
+          					<div class="row">
+          						<div class="col-sm">
+          							<label for="date"><strong>Enter the date to view report</strong></label>
+          						</div>
+          						<div class="col-sm">
+          							<input type="date" name="date" class="form-control" required="">
+          						</div>
+          						<div class="col-sm text-center">
+          							<input type="submit" class="btn btn-primary" name="submit" value="Search">
+          						</div>
+          					</div><br>
+          					<div class="result-area">
+          						<table width="100%" border="1" id="report-tbl">
+          							
+          						</table>
+          					</div>
+          				</form>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-
+	<script src="assets/JS/report_js.js"></script>
 	<script src="assets/JS/common_js.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {
+			get_gen_report();
     		$('[data-toggle="tooltip"]').tooltip();
     		var session_msg = '<?php echo $session->message(); ?>';
     		if (session_msg != '') {
