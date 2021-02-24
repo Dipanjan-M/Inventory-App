@@ -7,6 +7,11 @@ $in_stock = Analytics::get_stock_value() ?? '0.00';
 
 $sale_total = Analytics::get_total_sale() ?? '0.00';
 
+$wholesale_value = Analytics::get_wholesale_value() ?? '0.00';
+
+$retail_value = Analytics::get_reatail_value()?? '0.00';
+
+
 ?>
 
 <!DOCTYPE html>
@@ -27,6 +32,10 @@ $sale_total = Analytics::get_total_sale() ?? '0.00';
 
 	<!-- Latest compiled JavaScript -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <!-- W3 css -->
+  <!-- <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"> -->
+  <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-colors-metro.css">
 
 	<!-- Fontawesome 5.7.0 -->
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
@@ -109,15 +118,31 @@ $sale_total = Analytics::get_total_sale() ?? '0.00';
 					<!-- <h3 class="display-4">Inventory Reports</h3> -->
 					<div class="text-left p-3" id="general-report">
 						<div style="text-align: right;font-size: 20px;">
-        			 		<span style="float: left;"><h4 style="padding-left: 30vw;">Sale summery </h4></span>
-        					<span style="cursor: pointer;" onclick="$('#general-report').css('display','none');">
-              					<i class="fas fa-times text-danger" data-toggle="tooltip" data-placement="left" title="close"></i>
-            				</span>
-          				</div><br>
-					    <h4>Total stock Value</h4>
-                        <h5><i class="fas fa-rupee-sign"></i> <?php echo $in_stock; ?></h5>
-                        <h4>Total sale</h4>
-                        <h5><i class="fas fa-rupee-sign"></i> <?php echo $sale_total; ?></h5>
+        			<span style="float: left;"><h4 style="padding-left: 30vw;">Sale summery </h4></span>
+        			<span style="cursor: pointer;" onclick="$('#general-report').css('display','none');">
+              	<i class="fas fa-times text-danger" data-toggle="tooltip" data-placement="left" title="close"></i>
+            	</span>
+          	</div><br>
+            <div class="row p-3">
+              <div class="col p-3 w3-metro-teal">
+                <h4>Total Stock Cost Value</h4>
+                <h5><i class="fas fa-rupee-sign"></i> <?php echo $in_stock; ?></h5>
+              </div>
+              <div class="col p-3 w3-metro-light-blue">
+                <h4>Total sale inc. wholesale & retail both</h4>
+                <h5><i class="fas fa-rupee-sign"></i> <?php echo $sale_total; ?></h5>
+              </div>
+              <div class="col p-3 w3-metro-dark-purple">
+                <h4>Total Retail Value of the stock</h4>
+                <h5><i class="fas fa-rupee-sign"></i> <?php echo $retail_value; ?></h5>
+              </div>
+              <div class="col p-3 w3-metro-blue">
+                <h4>Total Wholesale Value of the stock</h4>
+                <h5><i class="fas fa-rupee-sign"></i> <?php echo $wholesale_value; ?></h5>
+              </div>
+            </div>
+					  
+            
 					</div>
 					<!-- Report on demand -->
 					<div class="p-3" id="report-on-demand">

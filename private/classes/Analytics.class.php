@@ -15,15 +15,43 @@ class Analytics extends DbObject {
 	}
 
 	public static function get_stock_value() {
-		$sql = "SELECT SUM(`products`.`unit_price`*`products`.`total_stock`) AS `stock_val` FROM `products`;";
+		$sql = "SELECT SUM(`products`.`main_price`*`products`.`total_stock`) AS `stock_val` FROM `products`;";
 		$result = Self::$database->query($sql);
 		if(!$result) {
-			$this->errors[] = "No data found in sale.";
+			$this->errors[] = "No data found in products.";
 			exit(0);
 		} else{
 			$row = $result->fetch_assoc();
 			$result->free();
 			$stock_val = $row['stock_val'];
+			return $stock_val;
+		}
+	}
+
+	public static function get_reatail_value() {
+		$sql = "SELECT SUM(`products`.`unit_price`*`products`.`total_stock`) AS `retail_val` FROM `products`;";
+		$result = Self::$database->query($sql);
+		if(!$result) {
+			$this->errors[] = "No data found in products.";
+			exit(0);
+		} else{
+			$row = $result->fetch_assoc();
+			$result->free();
+			$stock_val = $row['retail_val'];
+			return $stock_val;
+		}
+	}
+
+	public static function get_wholesale_value() {
+		$sql = "SELECT SUM(`products`.`vendor_price`*`products`.`total_stock`) AS `wholesale_val` FROM `products`;";
+		$result = Self::$database->query($sql);
+		if(!$result) {
+			$this->errors[] = "No data found in products.";
+			exit(0);
+		} else{
+			$row = $result->fetch_assoc();
+			$result->free();
+			$stock_val = $row['wholesale_val'];
 			return $stock_val;
 		}
 	}

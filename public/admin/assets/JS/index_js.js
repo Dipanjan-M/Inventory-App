@@ -15,29 +15,39 @@ setInterval(check_stock, 30000);
 $(document).on('click', '#total-calc-btn', function(e) {
     e.preventDefault();
     // console.log("Total button clicked.");
-    var total = 0;
+    var total_sale = 0;
+    var total_buy = 0;
     $('#all-orders > .each-orders').each(function(key, value) {
         // console.log(key, value.id);
         var nums = [];
-        var idn = key + 1;
+        var selector_id = value.id;
+        var strs = selector_id.split('-');
+        var idn = parseInt(strs[strs.length - 1]);
         $('#' + value.id + ' *').filter(':input').each(function(key, val) {
             if (val.type == "number" && val.name == "order[product][" + idn + "][quantity]") {
-                nums.push(val.value);
+                nums['quantity'] = val.value;
             }
             if (val.type == "number" && val.name == "order[product][" + idn + "][unit_price]") {
-                nums.push(val.value);
+                nums['unit_price'] = val.value;
+            }
+            if (val.type == "number" && val.name == "order[product][" + idn + "][main_price]") {
+                nums['main_price'] = val.value;
             }
         });
         // console.log(nums);
-        total += (nums[0] * nums[1]);
+        total_sale += ( parseInt(nums['quantity']) * parseInt(nums['unit_price']) );
+        total_buy  += ( parseInt(nums['quantity']) * parseInt(nums['main_price']) );
     });
+    $('#discount-inp').attr("max", (total_sale - total_buy).toFixed(2));
     var disc = $('#discount-inp').val();
     var discount = (disc == '') ? 0.00 : parseFloat(disc);
-    $('#total-show').html('Total = <i class="fas fa-rupee-sign"></i> ' + parseFloat(total).toFixed(2) + '<br>Discount = <i class="fas fa-rupee-sign"></i> ' + parseFloat(discount).toFixed(2) + '<br>Grand Total = <i class="fas fa-rupee-sign"></i> ' + parseFloat(total - discount).toFixed(2));
+    $('#total-show').html('<small>Maximum allowed discount = '+ (total_sale - total_buy).toFixed(2) +'</small><br>Total = <i class="fas fa-rupee-sign"></i> ' + parseFloat(total_sale).toFixed(2) + '<br>Discount = <i class="fas fa-rupee-sign"></i> ' + parseFloat(discount).toFixed(2) + '<br>Grand Total = <i class="fas fa-rupee-sign"></i> ' + parseFloat(total_sale - discount).toFixed(2));
 });
 
 $('#create-order').submit(function(e) {
+    $('#server_is_busy').css('display', 'block');
     e.preventDefault();
+    $('#btn-place-order').attr("disabled", "true");
     if (!$('#all-orders').is(':empty')) {
         $.ajax({
             url: $('#create-order').attr("action"),
@@ -53,17 +63,24 @@ $('#create-order').submit(function(e) {
                     $('#total-show').html('');
                     $('.create-order').css('display', 'none');
                     generate_bill_to_print(msgs);
+                    $('#btn-place-order').removeAttr("disabled");
                 } catch (e) {
                     $('#status-area').html(data);
                     // toggle_collapse_cast_details();
+                    $('#btn-place-order').removeAttr("disabled");
                 }
+                $('#server_is_busy').css('display', 'none');
             },
             error: function(err) {
                 alert(err);
+                $('#server_is_busy').css('display', 'none');
+                $('#btn-place-order').removeAttr("disabled");
             }
         });
     } else {
         alert("Please add some product to make an order.");
+        $('#server_is_busy').css('display', 'none');
+        $('#btn-place-order').removeAttr("disabled");
     }
 
 });
@@ -86,6 +103,8 @@ function generate_bill_to_print(data) {
                                         <th>Unit Price</th>
                                         <th>Qty.</th>
                                         <th>GST (%)</th>
+                                        <th>CGST</th>
+                                        <th>SGST</th>
                                         <th>Total</th>
                                     </tr>`;
 
@@ -104,11 +123,16 @@ function generate_bill_to_print(data) {
         var item_tax = parseFloat(bill['tax']);
         var item_cost_price = (item_unit_price * 100) / (100 + item_tax);
         var item_total_price = item_unit_price * item_quantity;
+        var total_cost_price = item_cost_price * item_quantity;
+        var tax_payed = item_total_price - total_cost_price;
+        var cgst_or_sgst = tax_payed/2;
         taxed_table += `<tr align="center">
                                     <td width="50%">` + item_name + `</td>
                                     <td>` + item_cost_price.toFixed(2) + `</td>
                                     <td>` + item_quantity + `</td>
                                     <td>` + item_tax.toFixed(2) + `</td>
+                                    <td>` + cgst_or_sgst.toFixed(2) + `</td>
+                                    <td>` + cgst_or_sgst.toFixed(2) + `</td>
                                     <td align="right" style="padding-right: .5vw;">` + item_total_price.toFixed(2) + `</td>
                                 </tr>`;
         normal_table += `<tr align="center">
@@ -120,7 +144,7 @@ function generate_bill_to_print(data) {
         grand_total += item_total_price;
     });
     taxed_table += `<tr align="center">
-                        <td colspan="4"><strong>Grand Total</strong></td>
+                        <td colspan="6"><strong>Grand Total</strong></td>
                         <td align="right" style="padding-right: .5vw;">` + grand_total.toFixed(2) + `<br>(-) ` + discount.toFixed(2) + `
                         <br><strong>` + (grand_total - discount).toFixed(2) + `</strong><br>(rounded)</td>
                     </tr>
@@ -241,6 +265,7 @@ $('#new-order').click(function() {
 });
 
 $('#search-input').keyup(function() {
+    $('#server_is_busy').css('display', 'block');
     var key = $('#search-input').text();
     // console.log(key);
     $.ajax({
@@ -252,13 +277,29 @@ $('#search-input').keyup(function() {
             try {
                 var elem = document.getElementById('available-products');
                 elem.innerHTML = '';
-                elem.innerHTML += `<table border="1" align="center" id="available-products-tbl">
+                elem.innerHTML += `<table border="1" align="center" id="available-products-tbl" style="font-size: 14px;">
                                                 <tr align="center">
                                                     <th>Name</th>
                                                     <th>Tax %</th>
-                                                    <th>Unit price</th>
+                                                    <th>
+                                                        Unit Price
+                                                        <table align="center" width="100%">
+                                                            <tr align="center">
+                                                                <td width="50%">Customer</td>
+                                                                <td width="50%">Vendor</td>
+                                                            </tr>
+                                                        </table>
+                                                    </th>
                                                     <th>In stock</th>
-                                                    <th>Action</th>
+                                                    <th>
+                                                        Action
+                                                        <table align="center" width="100%">
+                                                            <tr align="center">
+                                                                <td width="50%">Customer</td>
+                                                                <td width="50%">Vendor</td>
+                                                            </tr>
+                                                        </table>
+                                                    </th>
                                                 </tr>
                                             </table>`;
                 var tbl = document.getElementById('available-products-tbl');
@@ -271,28 +312,58 @@ $('#search-input').keyup(function() {
                     tbl.innerHTML += `<tr align="center" id="query-row-` + counter + `">
                                                 <td>` + msg['p_name'] + `</td>
                                                 <td>` + parseFloat(msg['gst_percentage']).toFixed(2) + `</td>
-                                                <td>` + parseFloat(msg['unit_price']).toFixed(2) + `</td>
+                                                <td>
+                                                    <table width="100%">
+                                                        <tr align="center">
+                                                            <td width="50%">
+                                                                `+parseFloat(msg['unit_price']).toFixed(2)+`
+                                                            </td>
+                                                            <td width="50%">
+                                                                `+parseFloat(msg['vendor_price']).toFixed(2)+`
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
                                                 <td>` + msg['total_stock'] + `</td>
                                                 <td>
-                                                    <i class="fas fa-cart-plus text-primary" style="cursor: pointer;" onclick="add_to_order('` + msg['p_name'] + `','` + msg['main_price'] + `','` + msg['gst_percentage'] + `','` + msg['unit_price'] + `','` + msg['total_stock'] + `','query-row-` + counter + `');"></i>
+                                                    <table width="100%">
+                                                        <tr align="center">
+                                                            <td width="50%">
+                                                                <i class="fas fa-cart-plus text-primary" style="cursor: pointer;" onclick="add_to_order('` + msg['p_name'] + `','` + msg['main_price'] + `','` + msg['gst_percentage'] + `','` + msg['unit_price'] + `','` + msg['total_stock'] + `','query-row-` + counter + `');"></i>
+                                                            </td>
+                                                            <td width="50%">
+                                                                <i class="fas fa-luggage-cart text-primary" style="cursor: pointer;" onclick="add_to_order('` + msg['p_name'] + `','` + msg['main_price'] + `','` + msg['gst_percentage'] + `','` + msg['vendor_price'] + `','` + msg['total_stock'] + `','query-row-` + counter + `');"></i>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
                                                 </td>
                                               </tr>`;
                 });
             } catch (e) {
                 $('#available-products').html(data);
             }
+            $('#server_is_busy').css('display', 'none');
         },
         error: function(err) {
             alert(err);
+            $('#server_is_busy').css('display', 'none');
         }
     });
 });
 
 function add_to_order(name, buying_price, tax, unit_price, in_stock, tr_id) {
     var elem = document.getElementById('all-orders');
-    var product_no = parseInt($('#all-orders').children('div').length);
-    product_no += 1;
-    elem.innerHTML += `<div class="each-orders" id="each-orders-` + product_no + `">
+    var next_id = 0;
+    if(!$('#all-orders').is(':empty')) {
+        $("#all-orders > .each-orders").each(function(key, value) {
+            var id_str = value.id;
+            var strs = id_str.split('-');
+            var current_id = parseInt(strs[strs.length - 1]);
+            next_id = next_id > current_id ? next_id : current_id;
+        });
+    }
+    var product_no = next_id + 1;
+    $('#all-orders').append(`<div class="each-orders" id="each-orders-` + product_no + `">
                                     <div class="row">
                                         <div class="col">
                                             <label for="order">Order ` + product_no + `</label>
@@ -322,16 +393,23 @@ function add_to_order(name, buying_price, tax, unit_price, in_stock, tr_id) {
                                             <input type="number" name="order[product][` + product_no + `][tax]" min="0" step="0.01" class="form-control" value="` + parseFloat(tax).toFixed(2) + `" readonly="" required="">
                                         </div>
                                     </div>
-                                </div><br>`;
+                                </div><br>`);
     $('#' + tr_id).remove();
 }
 
 function add_manual_order() {
     var elem = document.getElementById('all-orders');
-    var product_no = parseInt($('#all-orders').children('div').length);
-    product_no += 1;
-    // console.log(product_no);
-    elem.innerHTML += `<div class="each-orders" id="each-orders-` + product_no + `">
+    var next_id = 0;
+    if(!$('#all-orders').is(':empty')) {
+        $("#all-orders > .each-orders").each(function(key, value) {
+            var id_str = value.id;
+            var strs = id_str.split('-');
+            var current_id = parseInt(strs[strs.length - 1]);
+            next_id = next_id > current_id ? next_id : current_id;
+        });
+    }
+    var product_no = next_id + 1;
+    $('#all-orders').append(`<div class="each-orders" id="each-orders-` + product_no + `">
                                     <div class="row">
                                         <div class="col">
                                             <label for="order">Order ` + product_no + `</label>
@@ -364,7 +442,7 @@ function add_manual_order() {
                                             <input type="number" name="order[product][` + product_no + `][unit_price]" min="0" step="0.01" class="form-control" required="">
                                         </div>
                                     </div>
-                            </div><br>`;
+                            </div><br>`);
 }
 
 function get_last_7ds_analytics() {

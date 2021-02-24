@@ -7,6 +7,9 @@ $in_stock = Analytics::get_stock_value() ?? '0.00';
 
 $sale_total = Analytics::get_total_sale() ?? '0.00';
 
+$wholesale_value = Analytics::get_wholesale_value() ?? '0.00';
+
+$retail_value = Analytics::get_reatail_value()?? '0.00';
 
 ?>
 
@@ -42,9 +45,38 @@ $sale_total = Analytics::get_total_sale() ?? '0.00';
         #low-stock {
             display: none;
         }
+
+        .waiting{
+            position: absolute;
+            z-index: 100;
+            margin-left: -50px;
+            left: 50%;
+            top: 45%;
+            width: 100px;
+            height: 100px;
+            background-color: #fff;
+            font-size: 70px;
+            text-align: center;
+            box-shadow: 0px 1px 20px 7px;
+            border-radius: 8px;
+            display: none;
+        }
+        div#waiting-spinner{
+            color: #000;
+            animation: spinning 2s linear infinite;
+        }
+        @keyframes spinning{
+            100% {transform: rotate(360deg);}
+        }
     </style>
 </head>
 <body>
+    <div id="server_is_busy" class="waiting">
+        <div id="waiting-spinner">
+            <i class="fas fa-cog"></i>
+            <!-- <i class="fas fa-fan"></i> -->
+        </div>
+    </div>
 	<div id="status-area"></div>
 	<div class="create-order p-3">
 		<div style="text-align: right;font-size: 20px;">
@@ -161,7 +193,7 @@ $sale_total = Analytics::get_total_sale() ?? '0.00';
                         </div>
                         <br>
         				<div class="text-center">
-        					<input type="submit" name="submit" class="btn btn-primary" value="Place order">
+        					<input type="submit" name="submit" class="btn btn-primary" value="Place order" id="btn-place-order">
         				</div>
         			</form>
         		</div>
@@ -219,10 +251,26 @@ $sale_total = Analytics::get_total_sale() ?? '0.00';
 						<canvas id="myChart1" width="auto" height="250"></canvas>
 					</div>
 					<div class="col-sm-6">
-						<h4 class="display-4">Total stock Value</h4>
-                        <h5><i class="fas fa-rupee-sign"></i> <?php echo $in_stock; ?></h5>
-                        <h4 class="display-4">Total sale</h4>
-                        <h5><i class="fas fa-rupee-sign"></i> <?php echo $sale_total; ?></h5>
+                        <div class="row p-3">
+                            <div class="col-sm">
+                                <h4>Total stock Value</h4>
+                                <h5><i class="fas fa-rupee-sign"></i> <?php echo $in_stock; ?></h5>
+                            </div>
+                            <div class="col-sm">
+                                <h4>Total sale</h4>
+                                <h5><i class="fas fa-rupee-sign"></i> <?php echo $sale_total; ?></h5>
+                            </div>
+                        </div><br>
+						<div class="row p-3">
+                            <div class="col-sm">
+                                <h4>Total Retail Value of the stock</h4>
+                                <h5><i class="fas fa-rupee-sign"></i> <?php echo $retail_value; ?></h5>
+                            </div>
+                            <div class="col-sm">
+                                <h4>Total Wholesale Value of the stock</h4>
+                                <h5><i class="fas fa-rupee-sign"></i> <?php echo $wholesale_value; ?></h5>
+                            </div>
+                        </div>  
                         <br>
                         <div class="bg-light p-3" id="low-stock">
                             <h2>

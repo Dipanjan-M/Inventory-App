@@ -1,4 +1,5 @@
 $('#search-bill-form').submit(function(e) {
+    $('#server_is_busy').css('display', 'block');
     e.preventDefault();
     get_bill($('#bill_id_inp').val());
     $('#search-bill-form').trigger('reset');
@@ -11,6 +12,7 @@ function open_orders_list() {
 }
 
 function get_all_orders() {
+    $('#server_is_busy').css('display', 'block');
     $.get("fetch_all_orders.php", function(data, status) {
         var orders_table = document.getElementById('all-orders');
         var res_string = `<tr align="center">
@@ -58,7 +60,8 @@ function get_all_orders() {
                               </tr>`;
         });
         orders_table.innerHTML = res_string;
-        $('#spinners-all').remove();
+        // $('#spinners-all').remove();
+        $('#server_is_busy').css('display', 'none');
     });
 }
 
@@ -80,21 +83,25 @@ function get_bill(b_id) {
             } catch(e) {
                 alert(data);
             }
+            $('#server_is_busy').css('display', 'none');
         },
         error: function(err) {
             alert(err);
+            $('#server_is_busy').css('display', 'none');
         }
     });
 }
 
 function generate_bill_to_print(data) {
     var discount = parseFloat(data['billing_customer']['discount']);
-    var taxed_table = `<table border="1" width="100%">
+    var taxed_table = `<table border="1" width="100%" style="font-size: 15px;">
                                     <tr align="center">
-                                        <th width="50%">Particulars</th>
+                                        <th width="40%">Particulars</th>
                                         <th>Unit Price</th>
                                         <th>Qty.</th>
                                         <th>GST (%)</th>
+                                        <th>CGST</th>
+                                        <th>SGST</th>
                                         <th>Total</th>
                                     </tr>`;
 
@@ -113,11 +120,16 @@ function generate_bill_to_print(data) {
         var item_tax = parseFloat(bill['tax']);
         var item_cost_price = (item_unit_price * 100) / (100 + item_tax);
         var item_total_price = item_unit_price * item_quantity;
+        var total_cost_price = item_cost_price * item_quantity;
+        var tax_payed = item_total_price - total_cost_price;
+        var cgst_or_sgst = tax_payed/2;
         taxed_table += `<tr align="center">
                                     <td width="50%">` + item_name + `</td>
                                     <td>` + item_cost_price.toFixed(2) + `</td>
                                     <td>` + item_quantity + `</td>
                                     <td>` + item_tax.toFixed(2) + `</td>
+                                    <td>` + cgst_or_sgst.toFixed(2) + `</td>
+                                    <td>` + cgst_or_sgst.toFixed(2) + `</td>
                                     <td align="right" style="padding-right: .5vw;">` + item_total_price.toFixed(2) + `</td>
                                 </tr>`;
         normal_table += `<tr align="center">
@@ -129,7 +141,7 @@ function generate_bill_to_print(data) {
         grand_total += item_total_price;
     });
     taxed_table += `<tr align="center">
-                        <td colspan="4"><strong>Grand Total</strong></td>
+                        <td colspan="6"><strong>Grand Total</strong></td>
                         <td align="right" style="padding-right: .5vw;">` + grand_total.toFixed(2) + `<br>(-) `+discount.toFixed(2)+`
                         <br><strong>`+ (grand_total-discount).toFixed(2) +`</strong><br>(rounded)</td>
                     </tr>

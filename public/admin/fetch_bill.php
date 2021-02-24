@@ -6,7 +6,7 @@ require_login();
 $session->extend_window();
 
 if(is_post_request() && $_POST['bill_id']) {
-	$common_id = $_POST['bill_id'];
+	$common_id = trim($_POST['bill_id']);
 	$db_customer = Customer::find_by_bill_id($common_id);
 	if(!$db_customer) {
 		echo "No result found.";

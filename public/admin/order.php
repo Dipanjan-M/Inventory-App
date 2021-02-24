@@ -89,9 +89,40 @@ require_login();
     		background-color: #fff;
     		display: none;
 		}
+
+		.waiting{
+      		position: absolute;
+      		z-index: 100;
+      		margin-left: -50px;
+      		left: 50%;
+      		top: 45%;
+      		width: 100px;
+      		height: 100px;
+      		background-color: #fff;
+      		font-size: 70px;
+      		text-align: center;
+      		box-shadow: 0px 1px 20px 7px;
+      		border-radius: 8px;
+      		display: none;
+    	}
+
+    	div#waiting-spinner{
+      		color: #000;
+      		animation: spinning 2s linear infinite;
+    	}
+
+    	@keyframes spinning{
+      		100% {transform: rotate(360deg);}
+    	}
 	</style>
 </head>
 <body>
+	<div id="server_is_busy" class="waiting">
+    	<div id="waiting-spinner">
+      		<i class="fas fa-cog"></i>
+      		<!-- <i class="fas fa-fan"></i> -->
+    	</div>
+  	</div>
 	<div class="final-bill p-3">
 	</div>
 	<?php 
@@ -126,18 +157,7 @@ require_login();
             			</span>
           			</div><br>
           			<div style="overflow: auto;" id="table-holder">
-          				<div id="spinners-all" class="text-center">
-          					<div class="spinner-border text-muted"></div>
-                           	<div class="spinner-border text-primary"></div>
-                            <div class="spinner-border text-success"></div>
-                            <div class="spinner-border text-info"></div>
-                            <div class="spinner-border text-warning"></div>
-                            <div class="spinner-border text-danger"></div>
-                            <div class="spinner-border text-secondary"></div>
-                            <div class="spinner-border text-dark"></div>
-                            <div class="spinner-border text-light"></div>
-                        </div>
-          				<table border="1" align="center" style="width: 100%;" id="all-orders" ></table>
+          				<table border="1" align="center" style="width: 100%;font-size: 12px;" id="all-orders" ></table>
           			</div>
           			<!-- <table border="1" align="center" style="width: 100%;" id="all-orders" ></table> -->
 				</div>
