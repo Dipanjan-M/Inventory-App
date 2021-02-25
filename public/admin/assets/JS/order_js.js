@@ -60,7 +60,6 @@ function get_all_orders() {
                               </tr>`;
         });
         orders_table.innerHTML = res_string;
-        // $('#spinners-all').remove();
         $('#server_is_busy').css('display', 'none');
     });
 }
@@ -95,23 +94,22 @@ function get_bill(b_id) {
 function generate_bill_to_print(data) {
     var discount = parseFloat(data['billing_customer']['discount']);
     var taxed_table = `<table border="1" width="100%" style="font-size: 15px;">
-                                    <tr align="center">
-                                        <th width="40%">Particulars</th>
-                                        <th>Unit Price</th>
-                                        <th>Qty.</th>
-                                        <th>GST (%)</th>
-                                        <th>CGST</th>
-                                        <th>SGST</th>
-                                        <th>Total</th>
-                                    </tr>`;
+                            <tr align="center">
+                                <th width="50%">Particulars</th>
+                                <th>Unit Price</th>
+                                <th>Qty.</th>
+                                <th>CGST</th>
+                                <th>SGST</th>
+                                <th>Total</th>
+                            </tr>`;
 
     var normal_table = `<table border="1" width="100%">
-                                    <tr align="center">
-                                        <th width="60%">Particulars</th>
-                                        <th>Unit Price</th>
-                                        <th>Qty.</th>
-                                        <th>Total</th>
-                                    </tr>`;
+                            <tr align="center">
+                                <th width="60%">Particulars</th>
+                                <th>Unit Price</th>
+                                <th>Qty.</th>
+                                <th>Total</th>
+                            </tr>`;
     var grand_total = 0;
     data['bill_details'].forEach((bill) => {
         var item_name = bill['p_name'];
@@ -127,9 +125,8 @@ function generate_bill_to_print(data) {
                                     <td width="50%">` + item_name + `</td>
                                     <td>` + item_cost_price.toFixed(2) + `</td>
                                     <td>` + item_quantity + `</td>
-                                    <td>` + item_tax.toFixed(2) + `</td>
-                                    <td>` + cgst_or_sgst.toFixed(2) + `</td>
-                                    <td>` + cgst_or_sgst.toFixed(2) + `</td>
+                                    <td> @`+ (item_tax/2).toFixed(2) + `%&nbsp;&nbsp;<i class="fas fa-rupee-sign"></i>` + cgst_or_sgst.toFixed(2) + `</td>
+                                    <td> @`+ (item_tax/2).toFixed(2) + `%&nbsp;&nbsp;<i class="fas fa-rupee-sign"></i>` + cgst_or_sgst.toFixed(2) + `</td>
                                     <td align="right" style="padding-right: .5vw;">` + item_total_price.toFixed(2) + `</td>
                                 </tr>`;
         normal_table += `<tr align="center">
@@ -141,7 +138,7 @@ function generate_bill_to_print(data) {
         grand_total += item_total_price;
     });
     taxed_table += `<tr align="center">
-                        <td colspan="6"><strong>Grand Total</strong></td>
+                        <td colspan="5"><strong>Grand Total</strong></td>
                         <td align="right" style="padding-right: .5vw;">` + grand_total.toFixed(2) + `<br>(-) `+discount.toFixed(2)+`
                         <br><strong>`+ (grand_total-discount).toFixed(2) +`</strong><br>(rounded)</td>
                     </tr>
@@ -154,83 +151,87 @@ function generate_bill_to_print(data) {
                     </table>`;
 
     var the_html = `<div id="final-bill-head">
-                                <div class="row">
-                                    <div class="col-6">
-                                        <h4>Payment Receipt</h4>
-                                    </div>
-                                    <div class="col-6" style="text-align: right;padding-right: 3vw;padding-top: 1vw;">
-                                        <i class="fas fa-times text-danger" style="cursor: pointer;" onclick="close_final_bill();"></i>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-6 text-center">
-                                        <button class="btn btn-primary" onclick="print_bill('tax-bill','without-tax-bill');">Print Tax invoice</button>
-                                    </div>
-                                    <div class="col-6 text-center">
-                                        <button class="btn btn-primary" onclick="print_bill('without-tax-bill','tax-bill');">Print invoice</button>
-                                    </div>
-                                </div><br>
+                        <div class="row">
+                            <div class="col-6">
+                                <h4>Payment Receipt</h4>
                             </div>
-                            <div class="row" id="bill">
-                                <div class="col" id="tax-bill">
-                                    <div class="p-3 border">
-                                        <div class="text-center">
-                                            <h4><i class="fas fa-stethoscope"></i> Piya Motors</h4>
-                                            <h6><span class="border"> &nbsp; TAX Invoice &nbsp; </span></h6>
-                                            <p>
-                                                Nimtala, Daspur - xxxxxx <br> Paschim Mednipur, West Bengal, India
-                                                <br>Mobile No - +91-xxxxxxxxxx <br> Email - piyamotors@email.com
-                                            </p>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-sm">
-                                                <h5>` + data['billing_customer']['name'] + `</h5>
-                                                <p>` + data['billing_customer']['address'] + `</p>
-                                            </div>
-                                            <div class="col-sm pt-3 text-right">
-                                                <p>
-                                                    Mobile : +91-` + data['billing_customer']['phone'] + ` <br>
-                                                    E-mail : ` + data['billing_customer']['email'] + `
-                                                </p>
-                                                <strong>Date : ` + data['billing_customer']['date'] + `</strong>
-                                            </div>
-                                        </div>
-                                        <div class="text-center">
-                                            <p>Bill No. - <u><b>` + data['billing_customer']['bill_id'] + `</b></u></p>
-                                        </div><hr>
-                                        <div class="row p-3">` + taxed_table + `</div>
+                            <div class="col-6" style="text-align: right;padding-right: 3vw;padding-top: 1vw;">
+                                <i class="fas fa-times text-danger" style="cursor: pointer;" onclick="close_final_bill();"></i>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 text-center">
+                                <button class="btn btn-primary" onclick="print_bill('tax-bill','without-tax-bill');">Print Tax invoice</button>
+                            </div>
+                            <div class="col-6 text-center">
+                                <button class="btn btn-primary" onclick="print_bill('without-tax-bill','tax-bill');">Print invoice</button>
+                            </div>
+                        </div><br>
+                    </div>
+                    <div class="row" id="bill">
+                        <div class="col" id="tax-bill">
+                            <div class="p-3 border">
+                                <div class="text-center">
+                                    <h4>Piya Motors</h4>
+                                    <h6><span class="border"> &nbsp; TAX Invoice &nbsp; </span></h6>
+                                    <p>
+                                        Nimtala, Ranapur, Daspur - 721212<br>
+                                        Paschim Mednipur, West Bengal, India<br>
+                                        Mobile No - +91-9800619198 / 7872707955<br>
+                                        Email - piyamotor.yamaha@gmail.com
+                                    </p>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm">
+                                        <h5>` + data['billing_customer']['name'] + `</h5>
+                                        <p>` + data['billing_customer']['address'] + `</p>
                                     </div>
-                                </div><br>
-                                <div class="col" id="without-tax-bill">
-                                    <div class="p-3 border">
-                                        <div class="text-center">
-                                            <h4><i class="fas fa-stethoscope"></i> Piya Motors</h4>
-                                            <h6><span class="border"> &nbsp; Invoice &nbsp; </span></h6>
-                                            <p>
-                                                Nimtala, Daspur - xxxxxx <br> Paschim Mednipur, West Bengal, India
-                                                <br>Mobile No - +91-xxxxxxxxxx <br> Email - piyamotors@email.com
-                                            </p>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-sm">
-                                                <h5>` + data['billing_customer']['name'] + `</h5>
-                                                <p>` + data['billing_customer']['address'] + `</p>
-                                            </div>
-                                            <div class="col-sm pt-3 text-right">
-                                                <p>
-                                                    Mobile : +91-` + data['billing_customer']['phone'] + ` <br>
-                                                    E-mail : ` + data['billing_customer']['email'] + `
-                                                </p>
-                                                <strong>Date : ` + data['billing_customer']['date'] + `</strong>
-                                            </div>
-                                        </div>
-                                        <div class="text-center">
-                                            <p>Bill No. - <u><b>` + data['billing_customer']['bill_id'] + `</b></u></p>
-                                        </div><hr>
-                                        <div class="row p-3">` + normal_table + `</div>
+                                    <div class="col-sm pt-3 text-right">
+                                        <p>
+                                            Mobile : +91-` + data['billing_customer']['phone'] + ` <br>
+                                            E-mail : ` + data['billing_customer']['email'] + `
+                                        </p>
+                                        <strong>Date : ` + data['billing_customer']['date'] + `</strong>
                                     </div>
                                 </div>
-                            </div>`;
+                                <div class="text-center">
+                                    <p>Bill No. - <u><b>` + data['billing_customer']['bill_id'] + `</b></u></p>
+                                </div><hr>
+                                <div class="row p-3">` + taxed_table + `</div>
+                            </div>
+                        </div><br>
+                        <div class="col" id="without-tax-bill">
+                            <div class="p-3 border">
+                                <div class="text-center">
+                                    <h4>Piya Motors</h4>
+                                    <h6><span class="border"> &nbsp; Invoice &nbsp; </span></h6>
+                                    <p>
+                                        Nimtala, Ranapur, Daspur - 721212<br>
+                                        Paschim Mednipur, West Bengal, India<br>
+                                        Mobile No - +91-9800619198 / 7872707955<br>
+                                        Email - piyamotor.yamaha@gmail.com
+                                    </p>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm">
+                                        <h5>` + data['billing_customer']['name'] + `</h5>
+                                        <p>` + data['billing_customer']['address'] + `</p>
+                                    </div>
+                                    <div class="col-sm pt-3 text-right">
+                                        <p>
+                                            Mobile : +91-` + data['billing_customer']['phone'] + ` <br>
+                                            E-mail : ` + data['billing_customer']['email'] + `
+                                        </p>
+                                        <strong>Date : ` + data['billing_customer']['date'] + `</strong>
+                                    </div>
+                                </div>
+                                <div class="text-center">
+                                    <p>Bill No. - <u><b>` + data['billing_customer']['bill_id'] + `</b></u></p>
+                                </div><hr>
+                                <div class="row p-3">` + normal_table + `</div>
+                            </div>
+                        </div>
+                    </div>`;
     $('.final-bill').css("display", "block");
     $('.final-bill').html(the_html);
 }

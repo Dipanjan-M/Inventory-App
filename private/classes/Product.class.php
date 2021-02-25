@@ -119,6 +119,17 @@ class Product extends DbObject {
     }
   }
 
+  static public function lazy_load($offset) {
+    $sql = "SELECT * FROM " . static::$table_name . " ";
+    $sql .= "LIMIT 25 OFFSET " . self::$database->escape_string($offset) . ";";
+    $obj_array = static::find_by_sql($sql);
+    if(!empty($obj_array)) {
+      return $obj_array;
+    } else {
+      return false;
+    }
+  }
+
 }
 
 ?>

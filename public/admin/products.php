@@ -91,7 +91,7 @@ require_login();
 					<h2><i class="fas fa-cubes text-success"></i> Products</h2>
 				</div><br>
 				<div class="text-center">
-          			<button class="btn big-btn-lst-prod" onclick="open_product_list();">
+          			<button class="btn big-btn-lst-prod">
             			<h6>List Products <i class="fas fa-clipboard-list"></i></h6>
           			</button>
         		</div><br>
@@ -104,6 +104,9 @@ require_login();
               <button class="btn big-btn-chk-stk" onclick="edit_low_stocks();">
                 <h6>Low stocks <i class="fas fa-exclamation-triangle"></i></h6>
               </button>
+            </div>
+            <div class="p-3 text-success">
+              <h3 id="analytics-div"></h3>
             </div>
 			</div>
 			<div class="col-sm-9">
@@ -125,7 +128,7 @@ require_login();
             </div>
           </div>
           <div id="table-holder" style="overflow: auto;">
-            <table border="1" align="center" style="width: 100%;font-size: 13px;" id="all-products"></table>
+            <table border="1" align="center" style="width: 100%;font-size: 12px;" id="all-products" data-offset="0" data-fetch_status="true"></table>
           </div>
 				</div>
 

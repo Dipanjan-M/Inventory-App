@@ -1,7 +1,13 @@
+/*
+Function check_stock(){ code... }
+Parameters : none;
+Description : Checks the products table  in database
+and report if stock value of any product is under 10 unit.
+Sample call :  check_stock();
+*/
 function check_stock() {
     $.get("get_low_stocks.php", function(data, status) {
         var msgs = JSON.parse(data);
-        // console.log(msgs.length);
         if (msgs.length > 0) {
             document.getElementById('low-stock').style.display = "block";
         } else {
@@ -10,15 +16,21 @@ function check_stock() {
     });
 }
 
+/*
+setInterval function to check stock after every 30sec
+*/
 setInterval(check_stock, 30000);
 
+
+/*
+Click event handler for button with id 'total-calc-btn'
+Description: Calculate the total value of the bill including discount
+*/
 $(document).on('click', '#total-calc-btn', function(e) {
     e.preventDefault();
-    // console.log("Total button clicked.");
     var total_sale = 0;
     var total_buy = 0;
     $('#all-orders > .each-orders').each(function(key, value) {
-        // console.log(key, value.id);
         var nums = [];
         var selector_id = value.id;
         var strs = selector_id.split('-');
@@ -34,7 +46,6 @@ $(document).on('click', '#total-calc-btn', function(e) {
                 nums['main_price'] = val.value;
             }
         });
-        // console.log(nums);
         total_sale += ( parseInt(nums['quantity']) * parseInt(nums['unit_price']) );
         total_buy  += ( parseInt(nums['quantity']) * parseInt(nums['main_price']) );
     });
@@ -44,10 +55,14 @@ $(document).on('click', '#total-calc-btn', function(e) {
     $('#total-show').html('<small>Maximum allowed discount = '+ (total_sale - total_buy).toFixed(2) +'</small><br>Total = <i class="fas fa-rupee-sign"></i> ' + parseFloat(total_sale).toFixed(2) + '<br>Discount = <i class="fas fa-rupee-sign"></i> ' + parseFloat(discount).toFixed(2) + '<br>Grand Total = <i class="fas fa-rupee-sign"></i> ' + parseFloat(total_sale - discount).toFixed(2));
 });
 
+
+/*
+Event handler for order form submit
+*/
 $('#create-order').submit(function(e) {
-    $('#server_is_busy').css('display', 'block');
     e.preventDefault();
     $('#btn-place-order').attr("disabled", "true");
+    $('#server_is_busy').css('display', 'block');
     if (!$('#all-orders').is(':empty')) {
         $.ajax({
             url: $('#create-order').attr("action"),
@@ -55,18 +70,15 @@ $('#create-order').submit(function(e) {
             data: $('#create-order :input').serializeArray(),
             dataType: "text",
             success: function(data) {
-                // alert(data);
-                // console.log(data);
                 try {
                     var msgs = JSON.parse(data);
                     $('#create-order').trigger("reset");
                     $('#total-show').html('');
+                    $('#btn-place-order').removeAttr("disabled");
                     $('.create-order').css('display', 'none');
                     generate_bill_to_print(msgs);
-                    $('#btn-place-order').removeAttr("disabled");
                 } catch (e) {
                     $('#status-area').html(data);
-                    // toggle_collapse_cast_details();
                     $('#btn-place-order').removeAttr("disabled");
                 }
                 $('#server_is_busy').css('display', 'none');
@@ -85,6 +97,14 @@ $('#create-order').submit(function(e) {
 
 });
 
+
+/*
+Function toggle_collapse_cast_details() { code... }
+Arguments : none;
+Reference call : toggle_collapse_cast_details();
+Description : Toggle the display property of customer details section
+in order form
+*/
 function toggle_collapse_cast_details() {
     if ($('#cust-details').css('display') == '' || $('#cust-details').css('display') == 'block') {
         $('#cust-details').css('display', 'none');
@@ -95,26 +115,32 @@ function toggle_collapse_cast_details() {
     }
 }
 
+
+
+/*
+Function : generate_bill_to_print(data_arg) { code... }
+Argument : Take a confirmed order details as argumnet.
+Reference call : generate_bill_to_print(arg);
+Description : Generate formatted taxed invoice and normal invoice to print
+*/
 function generate_bill_to_print(data) {
     var discount = parseFloat(data['billing_customer']['discount']);
-    var taxed_table = `<table border="1" width="100%">
-                                    <tr align="center">
-                                        <th width="50%">Particulars</th>
-                                        <th>Unit Price</th>
-                                        <th>Qty.</th>
-                                        <th>GST (%)</th>
-                                        <th>CGST</th>
-                                        <th>SGST</th>
-                                        <th>Total</th>
-                                    </tr>`;
-
+    var taxed_table =  `<table border="1" width="100%">
+                            <tr align="center">
+                                <th width="50%">Particulars</th>
+                                <th>Unit Price</th>
+                                <th>Qty.</th>
+                                <th>CGST</th>
+                                <th>SGST</th>
+                                <th>Total</th>
+                            </tr>`;
     var normal_table = `<table border="1" width="100%">
-                                    <tr align="center">
-                                        <th width="60%">Particulars</th>
-                                        <th>Unit Price</th>
-                                        <th>Qty.</th>
-                                        <th>Total</th>
-                                    </tr>`;
+                            <tr align="center">
+                                <th width="60%">Particulars</th>
+                                <th>Unit Price</th>
+                                <th>Qty.</th>
+                                <th>Total</th>
+                            </tr>`;
     var grand_total = 0;
     data['bill_details'].forEach((bill) => {
         var item_name = bill['p_name'];
@@ -127,24 +153,23 @@ function generate_bill_to_print(data) {
         var tax_payed = item_total_price - total_cost_price;
         var cgst_or_sgst = tax_payed/2;
         taxed_table += `<tr align="center">
-                                    <td width="50%">` + item_name + `</td>
-                                    <td>` + item_cost_price.toFixed(2) + `</td>
-                                    <td>` + item_quantity + `</td>
-                                    <td>` + item_tax.toFixed(2) + `</td>
-                                    <td>` + cgst_or_sgst.toFixed(2) + `</td>
-                                    <td>` + cgst_or_sgst.toFixed(2) + `</td>
-                                    <td align="right" style="padding-right: .5vw;">` + item_total_price.toFixed(2) + `</td>
-                                </tr>`;
+                            <td width="50%">` + item_name + `</td>
+                            <td>` + item_cost_price.toFixed(2) + `</td>
+                            <td>` + item_quantity + `</td>
+                            <td> @`+ (item_tax/2).toFixed(2) + `%&nbsp;&nbsp;<i class="fas fa-rupee-sign"></i>` + cgst_or_sgst.toFixed(2) + `</td>
+                                    <td> @`+ (item_tax/2).toFixed(2) + `%&nbsp;&nbsp;<i class="fas fa-rupee-sign"></i>` + cgst_or_sgst.toFixed(2) + `</td>
+                            <td align="right" style="padding-right: .5vw;">` + item_total_price.toFixed(2) + `</td>
+                        </tr>`;
         normal_table += `<tr align="center">
-                                    <td width="60%">` + item_name + `</td>
-                                    <td>` + item_unit_price.toFixed(2) + `</td>
-                                    <td>` + item_quantity + `</td>
-                                    <td align="right" style="padding-right: .5vw;">` + item_total_price.toFixed(2) + `</td>
-                                </tr>`;
+                            <td width="60%">` + item_name + `</td>
+                            <td>` + item_unit_price.toFixed(2) + `</td>
+                            <td>` + item_quantity + `</td>
+                            <td align="right" style="padding-right: .5vw;">` + item_total_price.toFixed(2) + `</td>
+                        </tr>`;
         grand_total += item_total_price;
     });
     taxed_table += `<tr align="center">
-                        <td colspan="6"><strong>Grand Total</strong></td>
+                        <td colspan="5"><strong>Grand Total</strong></td>
                         <td align="right" style="padding-right: .5vw;">` + grand_total.toFixed(2) + `<br>(-) ` + discount.toFixed(2) + `
                         <br><strong>` + (grand_total - discount).toFixed(2) + `</strong><br>(rounded)</td>
                     </tr>
@@ -157,94 +182,108 @@ function generate_bill_to_print(data) {
                     </table>`;
 
     var the_html = `<div id="final-bill-head">
-                                <div class="row">
-                                    <div class="col-6">
-                                        <h4>Payment Receipt</h4>
-                                    </div>
-                                    <div class="col-6" style="text-align: right;padding-right: 3vw;padding-top: 1vw;">
-                                        <i class="fas fa-times text-danger" style="cursor: pointer;" onclick="close_final_bill();"></i>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-6 text-center">
-                                        <button class="btn btn-primary" onclick="print_bill('tax-bill','without-tax-bill');">Print Tax invoice</button>
-                                    </div>
-                                    <div class="col-6 text-center">
-                                        <button class="btn btn-primary" onclick="print_bill('without-tax-bill','tax-bill');">Print invoice</button>
-                                    </div>
-                                </div><br>
+                        <div class="row">
+                            <div class="col-6">
+                                <h4>Payment Receipt</h4>
                             </div>
-                            <div class="row" id="bill">
-                                <div class="col" id="tax-bill">
-                                    <div class="p-3 border">
-                                        <div class="text-center">
-                                            <h4><i class="fas fa-stethoscope"></i> Piya Motors</h4>
-                                            <h6><span class="border"> &nbsp; TAX Invoice &nbsp; </span></h6>
-                                            <p>
-                                                Nimtala, Daspur - xxxxxx <br> Paschim Mednipur, West Bengal, India
-                                                <br>Mobile No - +91-xxxxxxxxxx <br> Email - piyamotors@email.com
-                                            </p>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-sm">
-                                                <h5>` + data['billing_customer']['name'] + `</h5>
-                                                <p>` + data['billing_customer']['address'] + `</p>
-                                            </div>
-                                            <div class="col-sm pt-3 text-right">
-                                                <p>
-                                                    Mobile : +91-` + data['billing_customer']['phone'] + ` <br>
-                                                    E-mail : ` + data['billing_customer']['email'] + `
-                                                </p>
-                                                <strong>Date : ` + data['billing_customer']['date'] + `</strong>
-                                            </div>
-                                        </div>
-                                        <div class="text-center">
-                                            <p>Bill No. - <u><b>` + data['billing_customer']['bill_id'] + `</b></u></p>
-                                        </div><hr>
-                                        <div class="row p-3">` + taxed_table + `</div>
+                            <div class="col-6" style="text-align: right;padding-right: 3vw;padding-top: 1vw;">
+                                <i class="fas fa-times text-danger" style="cursor: pointer;" onclick="close_final_bill();"></i>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 text-center">
+                                <button class="btn btn-primary" onclick="print_bill('tax-bill','without-tax-bill');">Print Tax invoice</button>
+                            </div>
+                            <div class="col-6 text-center">
+                                <button class="btn btn-primary" onclick="print_bill('without-tax-bill','tax-bill');">Print invoice</button>
+                            </div>
+                        </div><br>
+                    </div>
+                    <div class="row" id="bill">
+                        <div class="col" id="tax-bill">
+                            <div class="p-3 border">
+                                <div class="text-center">
+                                    <h4>Piya Motors</h4>
+                                    <h6><span class="border"> &nbsp; TAX Invoice &nbsp; </span></h6>
+                                    <p>
+                                        Nimtala, Ranapur, Daspur - 721212<br>
+                                        Paschim Mednipur, West Bengal, India<br>
+                                        Mobile No - +91-9800619198 / 7872707955<br>
+                                        Email - piyamotor.yamaha@gmail.com
+                                    </p>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm">
+                                        <h5>` + data['billing_customer']['name'] + `</h5>
+                                        <p>` + data['billing_customer']['address'] + `</p>
                                     </div>
-                                </div><br>
-                                <div class="col" id="without-tax-bill">
-                                    <div class="p-3 border">
-                                        <div class="text-center">
-                                            <h4><i class="fas fa-stethoscope"></i> Piya Motors</h4>
-                                            <h6><span class="border"> &nbsp; Invoice &nbsp; </span></h6>
-                                            <p>
-                                                Nimtala, Daspur - xxxxxx <br> Paschim Mednipur, West Bengal, India
-                                                <br>Mobile No - +91-xxxxxxxxxx <br> Email - piyamotors@email.com
-                                            </p>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-sm">
-                                                <h5>` + data['billing_customer']['name'] + `</h5>
-                                                <p>` + data['billing_customer']['address'] + `</p>
-                                            </div>
-                                            <div class="col-sm pt-3 text-right">
-                                                <p>
-                                                    Mobile : +91-` + data['billing_customer']['phone'] + ` <br>
-                                                    E-mail : ` + data['billing_customer']['email'] + `
-                                                </p>
-                                                <strong>Date : ` + data['billing_customer']['date'] + `</strong>
-                                            </div>
-                                        </div>
-                                        <div class="text-center">
-                                            <p>Bill No. - <u><b>` + data['billing_customer']['bill_id'] + `</b></u></p>
-                                        </div><hr>
-                                        <div class="row p-3">` + normal_table + `</div>
+                                    <div class="col-sm pt-3 text-right">
+                                        <p>
+                                            Mobile : +91-` + data['billing_customer']['phone'] + ` <br>
+                                            E-mail : ` + data['billing_customer']['email'] + `
+                                        </p>
+                                        <strong>Date : ` + data['billing_customer']['date'] + `</strong>
                                     </div>
                                 </div>
-                            </div>`;
+                                <div class="text-center">
+                                    <p>Bill No. - <u><b>` + data['billing_customer']['bill_id'] + `</b></u></p>
+                                </div><hr>
+                                <div class="row p-3">` + taxed_table + `</div>
+                            </div>
+                        </div><br>
+                        <div class="col" id="without-tax-bill">
+                            <div class="p-3 border">
+                                <div class="text-center">
+                                    <h4>Piya Motors</h4>
+                                    <h6><span class="border"> &nbsp; Invoice &nbsp; </span></h6>
+                                    <p>
+                                        Nimtala, Ranapur, Daspur - 721212<br>
+                                        Paschim Mednipur, West Bengal, India<br>
+                                        Mobile No - +91-9800619198 / 7872707955<br>
+                                        Email - piyamotor.yamaha@gmail.com
+                                    </p>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm">
+                                        <h5>` + data['billing_customer']['name'] + `</h5>
+                                        <p>` + data['billing_customer']['address'] + `</p>
+                                    </div>
+                                    <div class="col-sm pt-3 text-right">
+                                        <p>
+                                            Mobile : +91-` + data['billing_customer']['phone'] + ` <br>
+                                            E-mail : ` + data['billing_customer']['email'] + `
+                                        </p>
+                                        <strong>Date : ` + data['billing_customer']['date'] + `</strong>
+                                    </div>
+                                </div>
+                                <div class="text-center">
+                                    <p>Bill No. - <u><b>` + data['billing_customer']['bill_id'] + `</b></u></p>
+                                </div><hr>
+                                <div class="row p-3">` + normal_table + `</div>
+                            </div>
+                        </div>
+                    </div>`;
     $('.final-bill').css("display", "block");
     $('.final-bill').html(the_html);
 }
 
+
+/*
+Function : close_final_bill() { code... }
+Description : To close final bill view
+*/
 function close_final_bill() {
     $('#tax-bill').empty();
     $('#without-tax-bill').empty();
     $('.final-bill').css('display', 'none');
-    // location.reload();
 }
 
+
+/*
+Function : print_bill(arg1, arg2) { code... }
+Description : Take two id as argument one for printing 
+and one for hiding
+*/
 function print_bill(x, y) {
     var the_div = document.getElementById(x);
     var not_the_div = document.getElementById(y);
@@ -267,7 +306,6 @@ $('#new-order').click(function() {
 $('#search-input').keyup(function() {
     $('#server_is_busy').css('display', 'block');
     var key = $('#search-input').text();
-    // console.log(key);
     $.ajax({
         url: "search_product.php",
         method: "post",
@@ -276,69 +314,67 @@ $('#search-input').keyup(function() {
         success: function(data) {
             try {
                 var elem = document.getElementById('available-products');
-                elem.innerHTML = '';
-                elem.innerHTML += `<table border="1" align="center" id="available-products-tbl" style="font-size: 14px;">
-                                                <tr align="center">
-                                                    <th>Name</th>
-                                                    <th>Tax %</th>
-                                                    <th>
-                                                        Unit Price
-                                                        <table align="center" width="100%">
-                                                            <tr align="center">
-                                                                <td width="50%">Customer</td>
-                                                                <td width="50%">Vendor</td>
-                                                            </tr>
-                                                        </table>
-                                                    </th>
-                                                    <th>In stock</th>
-                                                    <th>
-                                                        Action
-                                                        <table align="center" width="100%">
-                                                            <tr align="center">
-                                                                <td width="50%">Customer</td>
-                                                                <td width="50%">Vendor</td>
-                                                            </tr>
-                                                        </table>
-                                                    </th>
-                                                </tr>
-                                            </table>`;
-                var tbl = document.getElementById('available-products-tbl');
+                var res_str = '';
+                res_str += `<table border="1" align="center" id="available-products-tbl" style="font-size: 14px;">
+                                <tr align="center">
+                                    <th>Name</th>
+                                    <th>Tax %</th>
+                                    <th>
+                                        Unit Price
+                                        <table align="center" width="100%">
+                                            <tr align="center">
+                                                <td width="50%">Customer</td>
+                                                <td width="50%">Vendor</td>
+                                            </tr>
+                                        </table>
+                                    </th>
+                                    <th>In stock</th>
+                                    <th>
+                                        Action
+                                        <table align="center" width="100%">
+                                            <tr align="center">
+                                                <td width="50%">Customer</td>
+                                                <td width="50%">Vendor</td>
+                                            </tr>
+                                        </table>
+                                    </th>
+                                </tr>`;
                 var msgs = JSON.parse(data);
                 var counter = 0;
                 msgs.forEach((msg) => {
-                    // $('#available-products').html('');
-                    // console.log(msg);
                     counter++;
-                    tbl.innerHTML += `<tr align="center" id="query-row-` + counter + `">
-                                                <td>` + msg['p_name'] + `</td>
-                                                <td>` + parseFloat(msg['gst_percentage']).toFixed(2) + `</td>
-                                                <td>
-                                                    <table width="100%">
-                                                        <tr align="center">
-                                                            <td width="50%">
-                                                                `+parseFloat(msg['unit_price']).toFixed(2)+`
-                                                            </td>
-                                                            <td width="50%">
-                                                                `+parseFloat(msg['vendor_price']).toFixed(2)+`
-                                                            </td>
-                                                        </tr>
-                                                    </table>
+                    res_str += `<tr align="center" id="query-row-` + counter + `">
+                                    <td>` + msg['p_name'] + `</td>
+                                    <td>` + parseFloat(msg['gst_percentage']).toFixed(2) + `</td>
+                                    <td>
+                                        <table width="100%">
+                                            <tr align="center">
+                                                <td width="50%">
+                                                    `+parseFloat(msg['unit_price']).toFixed(2)+`
                                                 </td>
-                                                <td>` + msg['total_stock'] + `</td>
-                                                <td>
-                                                    <table width="100%">
-                                                        <tr align="center">
-                                                            <td width="50%">
-                                                                <i class="fas fa-cart-plus text-primary" style="cursor: pointer;" onclick="add_to_order('` + msg['p_name'] + `','` + msg['main_price'] + `','` + msg['gst_percentage'] + `','` + msg['unit_price'] + `','` + msg['total_stock'] + `','query-row-` + counter + `');"></i>
-                                                            </td>
-                                                            <td width="50%">
-                                                                <i class="fas fa-luggage-cart text-primary" style="cursor: pointer;" onclick="add_to_order('` + msg['p_name'] + `','` + msg['main_price'] + `','` + msg['gst_percentage'] + `','` + msg['vendor_price'] + `','` + msg['total_stock'] + `','query-row-` + counter + `');"></i>
-                                                            </td>
-                                                        </tr>
-                                                    </table>
+                                                <td width="50%">
+                                                    `+parseFloat(msg['vendor_price']).toFixed(2)+`
                                                 </td>
-                                              </tr>`;
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td>` + msg['total_stock'] + `</td>
+                                    <td>
+                                        <table width="100%">
+                                            <tr align="center">
+                                                <td width="50%">
+                                                    <i class="fas fa-cart-plus text-primary" style="cursor: pointer;" onclick="add_to_order('` + msg['p_name'] + `','` + msg['main_price'] + `','` + msg['gst_percentage'] + `','` + msg['unit_price'] + `','` + msg['total_stock'] + `','query-row-` + counter + `');"></i>
+                                                </td>
+                                                <td width="50%">
+                                                    <i class="fas fa-luggage-cart text-primary" style="cursor: pointer;" onclick="add_to_order('` + msg['p_name'] + `','` + msg['main_price'] + `','` + msg['gst_percentage'] + `','` + msg['vendor_price'] + `','` + msg['total_stock'] + `','query-row-` + counter + `');"></i>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>`;
                 });
+                res_str += `</table>`;
+                $('#available-products').html(res_str);
             } catch (e) {
                 $('#available-products').html(data);
             }
@@ -364,36 +400,36 @@ function add_to_order(name, buying_price, tax, unit_price, in_stock, tr_id) {
     }
     var product_no = next_id + 1;
     $('#all-orders').append(`<div class="each-orders" id="each-orders-` + product_no + `">
-                                    <div class="row">
-                                        <div class="col">
-                                            <label for="order">Order ` + product_no + `</label>
-                                        </div>
-                                        <div class="col" style="text-align: right;">
-                                            Delete <i class="fas fa-minus-circle text-danger" style="cursor: pointer;" onclick="$('#each-orders-` + product_no + `').remove();"></i>
-                                        </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <label for="order">Order ` + product_no + `</label>
                                     </div>
-                                    <div class="row">
-                                        <div class="col">
-                                            <label for="product-name">Product name</label>
-                                            <input type="text" name="order[product][` + product_no + `][name]" class="form-control" required="" readonly value="` + name + `">
-                                        </div>
-                                        <div class="col">
-                                            <label for="quantity">Enter quantity (Max : ` + in_stock + `)</label>
-                                            <input type="number" name="order[product][` + product_no + `][quantity]" class="form-control" min="1" max="` + in_stock + `" step="1" required="">
-                                        </div>
-                                    </div><br>
-                                    <div class="row">
-                                        <div class="col">
-                                            <input type="number" name="order[product][` + product_no + `][main_price]" readonly="" value="` + parseFloat(buying_price).toFixed(2) + `" required="" style="display: none;">
-                                            <label for="price">Price per unit (in rupees)</label>
-                                            <input type="number" name="order[product][` + product_no + `][unit_price]" min="0" step="0.01" class="form-control" readonly="" value="` + parseFloat(unit_price).toFixed(2) + `" required="">
-                                        </div>
-                                        <div class="col">
-                                            <label for="tax">Tax applicable (%)</label>
-                                            <input type="number" name="order[product][` + product_no + `][tax]" min="0" step="0.01" class="form-control" value="` + parseFloat(tax).toFixed(2) + `" readonly="" required="">
-                                        </div>
+                                    <div class="col" style="text-align: right;">
+                                        Delete <i class="fas fa-minus-circle text-danger" style="cursor: pointer;" onclick="$('#each-orders-` + product_no + `').remove();"></i>
                                     </div>
-                                </div><br>`);
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <label for="product-name">Product name</label>
+                                        <input type="text" name="order[product][` + product_no + `][name]" class="form-control" required="" readonly value="` + name + `">
+                                    </div>
+                                    <div class="col">
+                                        <label for="quantity">Enter quantity (Max : ` + in_stock + `)</label>
+                                        <input type="number" name="order[product][` + product_no + `][quantity]" class="form-control" min="1" max="` + in_stock + `" step="1" required="">
+                                    </div>
+                                </div><br>
+                                <div class="row">
+                                    <div class="col">
+                                        <input type="number" name="order[product][` + product_no + `][main_price]" readonly="" value="` + parseFloat(buying_price).toFixed(2) + `" required="" style="display: none;">
+                                        <label for="price">Price per unit (in rupees)</label>
+                                        <input type="number" name="order[product][` + product_no + `][unit_price]" min="0" step="0.01" class="form-control" readonly="" value="` + parseFloat(unit_price).toFixed(2) + `" required="">
+                                    </div>
+                                    <div class="col">
+                                        <label for="tax">Tax applicable (%)</label>
+                                        <input type="number" name="order[product][` + product_no + `][tax]" min="0" step="0.01" class="form-control" value="` + parseFloat(tax).toFixed(2) + `" readonly="" required="">
+                                    </div>
+                                </div>
+                            </div><br>`);
     $('#' + tr_id).remove();
 }
 
@@ -410,38 +446,38 @@ function add_manual_order() {
     }
     var product_no = next_id + 1;
     $('#all-orders').append(`<div class="each-orders" id="each-orders-` + product_no + `">
-                                    <div class="row">
-                                        <div class="col">
-                                            <label for="order">Order ` + product_no + `</label>
-                                        </div>
-                                        <div class="col" style="text-align: right;">
-                                            Delete <i class="fas fa-minus-circle text-danger" style="cursor: pointer;" onclick="$('#each-orders-` + product_no + `').remove();"></i>
-                                        </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <label for="order">Order ` + product_no + `</label>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <label for="product-name">Product name <sup class="text-danger">*</sup></label>
-                                            <input type="text" name="order[product][` + product_no + `][name]" class="form-control" required="">
-                                        </div>
-                                        <div class="col-3">
-                                            <label for="quantity">Enter quantity <sup class="text-danger">*</sup></label>
-                                            <input type="number" name="order[product][` + product_no + `][quantity]" class="form-control" min="1" step="1" required="">
-                                        </div>
-                                        <div class="col-3">
-                                            <label for="tax">Tax if applicable (%) </label>
-                                            <input type="number" name="order[product][` + product_no + `][tax]" min="0" step="0.01" class="form-control">
-                                        </div>
-                                    </div><br>
-                                    <div class="row">
-                                        <div class="col">
-                                            <label for="price">Buying price per unit (in rupees) <sup class="text-danger">*</sup></label>
-                                            <input type="number" name="order[product][` + product_no + `][main_price]" min="0" step="0.01" class="form-control" required="">
-                                        </div>
-                                        <div class="col">
-                                            <label for="price">Selling price per unit (in rupees) <sup class="text-danger">*</sup></label>
-                                            <input type="number" name="order[product][` + product_no + `][unit_price]" min="0" step="0.01" class="form-control" required="">
-                                        </div>
+                                    <div class="col" style="text-align: right;">
+                                        Delete <i class="fas fa-minus-circle text-danger" style="cursor: pointer;" onclick="$('#each-orders-` + product_no + `').remove();"></i>
                                     </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label for="product-name">Product name <sup class="text-danger">*</sup></label>
+                                        <input type="text" name="order[product][` + product_no + `][name]" class="form-control" required="">
+                                    </div>
+                                    <div class="col-3">
+                                        <label for="quantity">Enter quantity <sup class="text-danger">*</sup></label>
+                                        <input type="number" name="order[product][` + product_no + `][quantity]" class="form-control" min="1" step="1" required="">
+                                    </div>
+                                    <div class="col-3">
+                                        <label for="tax">Tax if applicable (%) </label>
+                                        <input type="number" name="order[product][` + product_no + `][tax]" min="0" step="0.01" class="form-control">
+                                    </div>
+                                </div><br>
+                                <div class="row">
+                                    <div class="col">
+                                        <label for="price">Buying price per unit (in rupees) <sup class="text-danger">*</sup></label>
+                                        <input type="number" name="order[product][` + product_no + `][main_price]" min="0" step="0.01" class="form-control" required="">
+                                    </div>
+                                    <div class="col">
+                                        <label for="price">Selling price per unit (in rupees) <sup class="text-danger">*</sup></label>
+                                        <input type="number" name="order[product][` + product_no + `][unit_price]" min="0" step="0.01" class="form-control" required="">
+                                    </div>
+                                </div>
                             </div><br>`);
 }
 
