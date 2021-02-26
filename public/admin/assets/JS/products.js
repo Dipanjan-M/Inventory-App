@@ -138,12 +138,14 @@ $('.big-btn-lst-prod').unbind('click').click((e)=>{
 });
 
 function display_edit_product_form() {
+    $('#analytics-div').html('');
     $('.add-product').css('display', 'none');
     $('.all-products-list').css('display', 'none');
     $('.edit-product').css("display", "block");
 }
 
 function open_add_product() {
+    $('#analytics-div').html('');
     $('.edit-product').css("display", "none");
     $('.all-products-list').css('display', 'none');
     $('.add-product').css('display', 'block');
