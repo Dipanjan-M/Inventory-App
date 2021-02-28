@@ -23,7 +23,7 @@ $('#edit-category-form').submit(function(e) {
     var form_data = $('#edit-category-form :input').serializeArray();
     form_data.push({ name: "cat[cat_id]", value: cat_id });
     $.ajax({
-        url: "edit_category.php",
+        url: "services/edit_category.php",
         method: "post",
         data: form_data,
         dataType: "text",
@@ -47,7 +47,7 @@ $('#edit-category-form').submit(function(e) {
 });
 
 function fetch_categories() {
-    $.get("fetch_all_categories.php", function(data, status) {
+    $.get("services/fetch_all_categories.php", function(data, status) {
         var elem = document.getElementById('all-categories');
         elem.innerHTML = `<tr align="center">
                                     <th>Name</th>
@@ -84,7 +84,7 @@ function delete_category(cat_id) {
     var elem = document.getElementById('status-area');
     elem.innerHTML = '';
     $.ajax({
-        url: "delete_category.php",
+        url: "services/delete_category.php",
         method: "post",
         data: { id: cat_id },
         dataType: "text",

@@ -6,7 +6,7 @@ and report if stock value of any product is under 10 unit.
 Sample call :  check_stock();
 */
 function check_stock() {
-    $.get("get_low_stocks.php", function(data, status) {
+    $.get("services/get_low_stocks.php", function(data, status) {
         var msgs = JSON.parse(data);
         if (msgs.length > 0) {
             document.getElementById('low-stock').style.display = "block";
@@ -203,13 +203,13 @@ function generate_bill_to_print(data) {
                         <div class="col" id="tax-bill">
                             <div class="p-3 border">
                                 <div class="text-center">
-                                    <h4>Piya Motors</h4>
+                                    <h4><i class="fab fa-opencart"></i> Mini Cart</h4>
                                     <h6><span class="border"> &nbsp; TAX Invoice &nbsp; </span></h6>
                                     <p>
-                                        Nimtala, Ranapur, Daspur - 721212<br>
-                                        Paschim Mednipur, West Bengal, India<br>
-                                        Mobile No - +91-9800619198 / 7872707955<br>
-                                        Email - piyamotor.yamaha@gmail.com
+                                        Address seg1, seg2, seg3 - zip<br>
+                                        District, State, country<br>
+                                        Mobile No - +91-xxxxxxxxxx / xxxxxxxxxx<br>
+                                        Email - example@email.com
                                     </p>
                                 </div>
                                 <div class="row">
@@ -234,13 +234,13 @@ function generate_bill_to_print(data) {
                         <div class="col" id="without-tax-bill">
                             <div class="p-3 border">
                                 <div class="text-center">
-                                    <h4>Piya Motors</h4>
+                                    <h4><i class="fab fa-opencart"></i> Mini Cart</h4>
                                     <h6><span class="border"> &nbsp; Invoice &nbsp; </span></h6>
                                     <p>
-                                        Nimtala, Ranapur, Daspur - 721212<br>
-                                        Paschim Mednipur, West Bengal, India<br>
-                                        Mobile No - +91-9800619198 / 7872707955<br>
-                                        Email - piyamotor.yamaha@gmail.com
+                                        Address seg1, seg2, seg3 - zip<br>
+                                        District, State, country<br>
+                                        Mobile No - +91-xxxxxxxxxx / xxxxxxxxxx<br>
+                                        Email - example@email.com
                                     </p>
                                 </div>
                                 <div class="row">
@@ -305,9 +305,9 @@ $('#new-order').click(function() {
 
 $('#search-input').keyup(function() {
     $('#server_is_busy').css('display', 'block');
-    var key = $('#search-input').text();
+    var key = $('#search-input').text().trim();
     $.ajax({
-        url: "search_product.php",
+        url: "services/search_product.php",
         method: "post",
         data: { search_key: key },
         dataType: "text",
@@ -482,7 +482,7 @@ function add_manual_order() {
 }
 
 function get_last_7ds_analytics() {
-    $.get("last_7_days_sale.php", function(data, status) {
+    $.get("services/last_7_days_sale.php", function(data, status) {
         var msgs = JSON.parse(data);
         // console.log(msgs);
         var ctx1 = document.getElementById('myChart1').getContext('2d');

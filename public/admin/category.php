@@ -10,7 +10,10 @@ require_login();
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Piyamotors | Product Category</title>
+	<title>Mini Cart | Product Category</title>
+
+  <!-- Icon for title -->
+  <link rel="icon" href="assets/images/mini-cart-bolder.PNG" type="image/png">
 
 	<!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -77,7 +80,7 @@ require_login();
           		<i class="fas fa-times text-danger" data-toggle="tooltip" data-placement="left" title="close"></i>
           	</span>
           </div><br>
-          <form action="add_category.php" method="post" id="add_category-form">
+          <form action="services/add_category.php" method="post" id="add_category-form">
           	<label for="cat_name">Enter the catagory name <sup class="text-danger">*</sup></label><br>
           	<input type="text" name="category[cat_name]" class="form-control" required=""><br>
           	<label for="gst">Enter tax applicable (GST or non-GST %) <sup class="text-danger">*</sup></label><br>

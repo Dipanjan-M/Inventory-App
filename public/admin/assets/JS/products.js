@@ -7,7 +7,7 @@ function get_all_products() {
     }
     document.getElementById('server_is_busy').style.display = "block";
     $.ajax({
-        url: "fetch_all_products.php",
+        url: "services/fetch_all_products.php",
         method: "post",
         data: {Offset: $('#all-products').data('offset')},
         dataType: "text",
@@ -74,6 +74,7 @@ function get_all_products() {
                 busy_state = false;
             } catch(e) {
                 alert(data);
+                $('#all-products').data('fetch_status','false');
                 busy_state = false;
             }
             document.getElementById('server_is_busy').style.display = "none";
@@ -91,7 +92,7 @@ function get_all_products() {
 $('#table-holder').scroll(function(){
     var elem = document.getElementById('table-holder');
     var the_diff = elem.scrollHeight-elem.scrollTop;
-    if(the_diff == elem.clientHeight) {
+    if(Math.floor(the_diff) == elem.clientHeight) {
         var fetch_status = $('#all-products').data('fetch_status');
         if(fetch_status == "true") {
             get_all_products();
@@ -196,7 +197,7 @@ function edit_product(p_id, p_name, p_cat, p_main_price, p_unit_price, p_vendor_
                     </button>
                   </div>`;
     // console.log(p_id, p_name, p_cat, p_unit_price, p_stock);
-    $.get("fetch_all_categories.php", function(data, status) {
+    $.get("services/fetch_all_categories.php", function(data, status) {
         var sel_elem = document.getElementById('sel-edt-prod-cat');
         sel_elem.innerHTML = '';
         var categories = JSON.parse(data);
@@ -219,7 +220,7 @@ $('#edit-product').submit(function(e) {
     $('#btn-edt-prod').attr("disabled", "true");
     $('#btn-edt-prod').html(`<span class="spinner-border spinner-border-sm"></span> Processing...`);
     $.ajax({
-        url: "edit_product.php",
+        url: "services/edit_product.php",
         method: "post",
         data: $('#edit-product :input').serializeArray(),
         dataType: "text",
@@ -254,7 +255,7 @@ function increase_stock(p_id, call_from) {
             alert("Enter value greater than 0.");
         } else {
             $.ajax({
-                url: "increment_stock.php",
+                url: "services/increment_stock.php",
                 method: "post",
                 data: { id: p_id, inc_amount: increment },
                 dataType: "text",
@@ -278,7 +279,7 @@ function increase_stock(p_id, call_from) {
 
 function delete_product(p_id) {
     $.ajax({
-        url: "delete_product.php",
+        url: "services/delete_product.php",
         method: "post",
         data: { id: p_id },
         dataType: "text",
@@ -299,7 +300,7 @@ function delete_product(p_id) {
 }
 
 function get_options() {
-    $.get("fetch_all_categories.php", function(data, status) {
+    $.get("services/fetch_all_categories.php", function(data, status) {
         var elem = document.getElementById('sel-prod-cat');
         elem.innerHTML = '';
         var msgs = JSON.parse(data);
@@ -315,7 +316,7 @@ $('#add-product').submit(function(e) {
     $('#btn-add-prod').attr("disabled", "true");
     $('#btn-add-prod').html('<span class="spinner-border spinner-border-sm"></span> Processing...');
     $.ajax({
-        url: "add_product.php",
+        url: "services/add_product.php",
         method: "post",
         data: $('#add-product :input').serializeArray(),
         dataType: "text",
@@ -348,10 +349,8 @@ function edit_low_stocks() {
     $('.all-products-list').css('display', 'block');
     document.getElementById('server_is_busy').style.display = "block";
     document.getElementById('all-products').style.display = "none";
-    $.get("get_low_stocks.php", function(data, status) {
+    $.get("services/get_low_stocks.php", function(data, status) {
         var products = JSON.parse(data);
-        // console.log(msgs);
-        var elem = document.getElementById('all-products');
         var res_str = `<tr align="center">
                         <th>Name</th>
                         <th>Category</th>
@@ -370,7 +369,9 @@ function edit_low_stocks() {
                         <th width="10%">Added At</th>
                         <th width="12%">Action</th>
                       </tr>`;
+        $('#all-products').html(res_str);
         products.forEach((product) => {
+            res_str = '';
             res_str += `<tr align="center">
                       <td>` + product['p_name'] + `</td>
                       <td>` + product['category'] + `</td>
@@ -388,9 +389,9 @@ function edit_low_stocks() {
                       <td width="10%">` + product['createdAt'] + `</td>
                       <td width="12%"><span class="text-success" style="cursor: pointer;" onclick="increase_stock('` + product['id'] + `','low_stock');">Add</span> | <span class="text-primary" style="cursor: pointer;" onclick="edit_product('` + product['id'] + `','` + product['p_name'] + `','` + product['category'] + `','` + product['main_price'] + `','` + product['unit_price'] + `','` + product['vendor_price'] + `','` + product['total_stock'] + `');">Edit</span> | <span class="text-danger" style="cursor: pointer;" onclick="delete_product('` + product['id'] + `');">Delete</span></td>
                      </tr>`;
+            $('#all-products').append(res_str);
         });
         document.getElementById('server_is_busy').style.display = "none";
-        $('#all-products').html(res_str);
         document.getElementById('all-products').style.display = "block";
         var fetched_product_count = $('#all-products > tr').length-1;
         $('#analytics-div').html('Total products fetched '+fetched_product_count);
@@ -402,11 +403,11 @@ $(".search-box").keyup(function() {
     $('#all-products').data("offset","0");
     $('#all-products').data('fetch_status','false');
     $('#all-products').empty();
-    var query = $(".search-box").text();
+    var query = $(".search-box").text().trim();
     if(query != '') {
         document.getElementById('server_is_busy').style.display = "block";
         $.ajax({
-            url: "product_search.php",
+            url: "services/product_search.php",
             method: "post",
             data: { key: query },
             dataType: "text",
@@ -430,9 +431,11 @@ $(".search-box").keyup(function() {
                                     <th width="10%">Added At</th>
                                     <th width="12%">Action</th>
                                 </tr>`;
+                $('#all-products').html(res_str);
                 try {
                     var products = JSON.parse(data);
                     products.forEach((product)=>{
+                        res_str = '';
                         var legend = "";
                         if (parseInt(product['total_stock']) < 10) {
                             legend = "w3-pale-red";
@@ -456,13 +459,13 @@ $(".search-box").keyup(function() {
                                             <td width="10%">` + product['createdAt'] + `</td>
                                             <td width="12%"><span class="text-success" style="cursor: pointer;" onclick="increase_stock('` + product['id'] + `','all_products');">Add</span> | <span class="text-primary" style="cursor: pointer;" onclick="edit_product('` + product['id'] + `','` + product['p_name'] + `','` + product['category'] + `','` + product['main_price'] + `','` + product['unit_price'] + `','` + product['vendor_price'] + `','` + product['total_stock'] + `');">Edit</span> | <span class="text-danger" style="cursor: pointer;" onclick="delete_product('` + product['id'] + `');">Delete</span></td>
                                         </tr>`;
+                        $('#all-products').append(res_str);
                     });
                 } catch(e) {
                     if(data != '') {
                         elem.innerHTML = '<h4 class="text-danger">'+data+'</h4>';
                     }
                 }
-                $('#all-products').html(res_str);
                 document.getElementById('server_is_busy').style.display = "none";
             },
             error: function(err) {

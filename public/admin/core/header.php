@@ -3,7 +3,7 @@
   		<span style="font-size:30px;cursor:pointer;padding-right: 2vw;" onclick="openNav()">
   			<i class="fa fa-bars"></i>
   		</span>
-  		<span class="navbar-brand"> <i class="fas fa-stethoscope"></i> Piya Motors</span>
+  		<span class="navbar-brand"> <i class="fab fa-opencart" style="font-weight: bolder;"></i> Mini Cart</span>
   		
   		<!-- Links -->
   		<ul class="navbar-nav" style="position: absolute;right: 1vw;">

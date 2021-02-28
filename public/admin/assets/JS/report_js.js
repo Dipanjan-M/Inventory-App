@@ -45,5 +45,7 @@ $('#get-report-form').submit(function(e) {
             alert(err);
         }
     });
+    var inp_date_data = $('#get-report-form :input').serializeArray()[0];
+    $('#date-for-report').html('<h6 class="text-success"> Report as on - '+ inp_date_data.value +'</h6>');
     $('#get-report-form').trigger('reset');
 });

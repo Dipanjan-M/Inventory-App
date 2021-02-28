@@ -10,7 +10,10 @@ require_login();
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Piyamotors | Products</title>
+	<title>Mini Cart | Products</title>
+
+  <!-- Icon for title -->
+  <link rel="icon" href="assets/images/mini-cart-bolder.PNG" type="image/png">
 
 	<!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -140,7 +143,7 @@ require_login();
               				<i class="fas fa-times text-danger" data-toggle="tooltip" data-placement="left" title="close"></i>
             			</span>
           			</div><br>
-          			<form action="add_product.php" method="post" id="add-product">
+          			<form action="services/add_product.php" method="post" id="add-product">
           				<label for="prod-name">Enter product name <sup class="text-danger">*</sup></label><br>
           				<input type="text" name="product[p_name]" class="form-control" required=""><br>
           				<div class="row">
@@ -179,14 +182,14 @@ require_login();
 				<!-- Div for edit product -->
 				<div class="edit-product p-3">
 					<div style="text-align: right;font-size: 20px;">
-        			 	<span style="float: left;"><h4 style="padding-left: 30vw;">Edit Product</h4></span>
-        				<span style="cursor: pointer;" onclick="$('.edit-product').css('display','none');">
-              				<i class="fas fa-times text-danger" data-toggle="tooltip" data-placement="left" title="close"></i>
-            			</span>
-          			</div><br>
-          			<form action="" method="post" id="edit-product">
+        		<span style="float: left;"><h4 style="padding-left: 30vw;">Edit Product</h4></span>
+        		<span style="cursor: pointer;" onclick="$('.edit-product').css('display','none');">
+              <i class="fas fa-times text-danger" data-toggle="tooltip" data-placement="left" title="close"></i>
+            </span>
+          </div><br>
+          <form action="" method="post" id="edit-product">
           				
-          			</form>
+          </form>
 				</div>
 			</div>
 		</div>

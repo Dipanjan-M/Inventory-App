@@ -43,7 +43,10 @@ if(is_post_request()) {
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Piya Motors | Admin Login</title>
+    <title>Mini Cart | Admin Login</title>
+
+    <!-- Icon for title -->
+    <link rel="icon" href="assets/images/mini-cart-bolder.PNG" type="image/png">
         
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -68,10 +71,10 @@ if(is_post_request()) {
         <?php echo display_errors($errors); ?>
     </div>
     <div class="mb-3 mt-5 text-center" style="font-size: 30px;">
-        <i class="fas fa-stethoscope"></i>
-        <span>PIYA MOTORS</span>
+        <i class="fab fa-opencart"></i>
+        <span>Mini Cart</span>
     </div>
-    <p class="text-center" style="font-size: 20px;"><i class="fas fa-user text-danger"></i> Admin Area</p>
+    <p class="text-center" style="font-size: 20px;"><i class="fas fa-user text-primary"></i> Admin Area</p>
     <div class="container-fluid">
         <div class="row justify-content-center custom-margin">
             <div class="col-sm-6 col-md-4">
@@ -87,7 +90,7 @@ if(is_post_request()) {
                         <label for="pass" class="font-weight-bold pl-2">Password</label>
                         <input type="password" name="aPassword" class="form-control" placeholder="Password">
                     </div>
-                    <button type="submit" class="btn btn-outline-danger mt-4 font-weight-bold btn-block shadow-sm">Login</button>
+                    <button type="submit" class="btn btn-outline-primary mt-4 font-weight-bold btn-block shadow-sm">Login</button>
                 </form>
             </div>
         </div>
@@ -96,7 +99,7 @@ if(is_post_request()) {
         <br>
         <span><a href="../" style="text-decoration: none;color: #333;cursor: pointer;"><i class="fa fa-home"></i> Home</a></span>
         <br><br><br>
-        <span>&copy; <small id="year"></small> | piyamotors </span>
+        <span>&copy; <small id="year"></small> | <i class="fab fa-opencart"></i> Mini Cart </span>
     </div>
     <script src="assets/JS/public_index.js"></script>
 </body>
