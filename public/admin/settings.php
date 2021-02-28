@@ -10,7 +10,10 @@ require_login();
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Piyamotors | Settings</title>
+	<title>Mini Cart | Settings</title>
+
+  <!-- Icon for title -->
+  <link rel="icon" href="assets/images/mini-cart-bolder.PNG" type="image/png">
 
 	<!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -72,7 +75,7 @@ require_login();
               <i class="fas fa-times text-danger" data-toggle="tooltip" data-placement="left" title="close"></i>
             </span>
           </div><br>
-          <form action="update_admin.php" method="post" id="update-info-form">
+          <form action="services/update_admin.php" method="post" id="update-info-form">
             <div class="row">
               <div class="col">
                 <label for="first_name">First Name<sup class="text-danger">*</sup></label><br>
@@ -110,7 +113,7 @@ require_login();
               <i class="fas fa-times text-danger" data-toggle="tooltip" data-placement="left" title="close"></i>
             </span>
           </div><br>
-          <form action="add_new_admin.php" method="post" id="add-admin-form">
+          <form action="services/add_new_admin.php" method="post" id="add-admin-form">
             <div class="row">
               <div class="col">
                 <label for="f_name">Enter First name <sup class="text-danger">*</sup></label><br>

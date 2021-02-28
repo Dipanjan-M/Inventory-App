@@ -19,7 +19,10 @@ $retail_value = Analytics::get_reatail_value()?? '0.00';
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Piyamotors | Reports</title>
+	<title>Mini Cart | Reports</title>
+
+  <!-- Icon for title -->
+  <link rel="icon" href="assets/images/mini-cart-bolder.PNG" type="image/png">
 
 	<!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -152,7 +155,7 @@ $retail_value = Analytics::get_reatail_value()?? '0.00';
               					<i class="fas fa-times text-danger" data-toggle="tooltip" data-placement="left" title="close"></i>
             				</span>
           				</div><br>
-          				<form action="get_report_by_date.php" method="post" id="get-report-form">
+          				<form action="services/get_report_by_date.php" method="post" id="get-report-form">
           					<div class="row">
           						<div class="col-sm">
           							<label for="date"><strong>Enter the date to view report</strong></label>
@@ -165,6 +168,9 @@ $retail_value = Analytics::get_reatail_value()?? '0.00';
           						</div>
           					</div><br>
           					<div class="result-area">
+                      <div class="text-center" id="date-for-report">
+                        
+                      </div>
           						<table width="100%" border="1" id="report-tbl">
           							
           						</table>

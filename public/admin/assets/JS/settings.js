@@ -1,6 +1,6 @@
 function delete_admin(admin_id, my_id) {
     $.ajax({
-        url: "delete_admin.php",
+        url: "services/delete_admin.php",
         method: "post",
         data: { admin_id: admin_id },
         dataType: "text",
@@ -20,7 +20,7 @@ function delete_admin(admin_id, my_id) {
 }
 
 function fetch_admins(my_id) {
-    $.get('get_all_admins.php', function(data, status) {
+    $.get('services/get_all_admins.php', function(data, status) {
         var admins = JSON.parse(data);
         var elem = document.getElementById('all-admins');
         elem.innerHTML = `<tr  align="center">

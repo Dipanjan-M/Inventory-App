@@ -18,7 +18,10 @@ $retail_value = Analytics::get_reatail_value()?? '0.00';
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Piyamotors | Admin Dashboard</title>
+	<title>Mini Cart | Admin Dashboard</title>
+
+    <!-- Icon for title -->
+    <link rel="icon" href="assets/images/mini-cart-bolder.PNG" type="image/png">
 
 	<!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -115,7 +118,7 @@ $retail_value = Analytics::get_reatail_value()?? '0.00';
         			<h5>Order form</h5><hr>
         		</div>
         		<div class="the-order p-3" style="">
-        			<form action="new_order.php" method="post" id="create-order">
+        			<form action="services/new_order.php" method="post" id="create-order">
         				<div class="row">
         					<div class="col-sm">
         						<strong>Customer details</strong>

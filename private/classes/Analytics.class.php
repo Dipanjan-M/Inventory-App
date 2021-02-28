@@ -3,7 +3,7 @@
 class Analytics extends DbObject {
 
 	public static function check_for_low_stock() {
-		$sql = "SELECT * FROM `products` WHERE `products`.`total_stock`<10;";
+		$sql = "SELECT * FROM `products` WHERE `total_stock`<10 ORDER BY `total_stock` ASC;";
 		$result = Self::$database->query($sql);
 		$products = [];
 		if($result->num_rows > 0) {

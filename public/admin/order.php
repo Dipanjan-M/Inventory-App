@@ -10,7 +10,10 @@ require_login();
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Piyamotors | Orders</title>
+	<title>Mini Cart | Orders</title>
+
+	<!-- Icon for title -->
+  	<link rel="icon" href="assets/images/mini-cart-bolder.PNG" type="image/png">
 
 	<!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -157,7 +160,7 @@ require_login();
             			</span>
           			</div><br>
           			<div style="overflow: auto;" id="table-holder">
-          				<table border="1" align="center" style="width: 100%;font-size: 12px;" id="all-orders" ></table>
+          				<table border="1" align="center" data-offset="0" data-fetch_status="true" style="width: 100%;font-size: 12px;" id="all-orders"></table>
           			</div>
           			<!-- <table border="1" align="center" style="width: 100%;" id="all-orders" ></table> -->
 				</div>

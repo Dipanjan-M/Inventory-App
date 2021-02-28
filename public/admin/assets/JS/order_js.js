@@ -1,21 +1,23 @@
-$('#search-bill-form').submit(function(e) {
-    $('#server_is_busy').css('display', 'block');
-    e.preventDefault();
-    get_bill($('#bill_id_inp').val());
-    $('#search-bill-form').trigger('reset');
-});
-
-function open_orders_list() {
-    get_all_orders();
-    $('.search-order').css('display', 'none');
-    $('.all-orders-list').css("display", "block");
-}
-
+var busy_status = false;
 function get_all_orders() {
     $('#server_is_busy').css('display', 'block');
-    $.get("fetch_all_orders.php", function(data, status) {
-        var orders_table = document.getElementById('all-orders');
-        var res_string = `<tr align="center">
+    if(busy_status) {
+        return;
+    } else {
+        busy_status = true;
+    }
+    $.ajax({
+        url: "services/fetch_all_orders.php", 
+        method: "post",
+        data: {offset: $('#all-orders').data('offset')},
+        dataType: "text",
+        success: function(data) {
+            var offset = parseInt($('#all-orders').data('offset'));
+            var res_string = '';
+            try {
+                if(offset == 0) {
+                    $('#all-orders').html('');
+                    res_string += `<tr align="center">
                             <th width="40%">Customer</th>
                             <th>
                                 Orders
@@ -30,9 +32,15 @@ function get_all_orders() {
                             </th>
                             <th>Action</th>
                           </tr>`;
-        var orders = JSON.parse(data);
-        orders.forEach((order) => {
-            res_string += `<tr align="center">
+                }
+                var orders = JSON.parse(data);
+                var size = orders.length;
+                if(size<5) {
+                    $('#all-orders').data('fetch_status', 'false');
+                }
+                orders.forEach((order) => {
+                    // console.log(order['customer_details']['id']);
+                    res_string += `<tr align="center">
                                 <td width="40%" align="left" style="padding-left: 1vw;">
                                   ` + order['customer_details']['name'] + ` <br>
                                   ` + order['customer_details']['address'] + ` <br>
@@ -43,35 +51,84 @@ function get_all_orders() {
                                 </td>
                                 <td>
                                     <table style="width: 100%;">`;
-            order['customer_details']['orders'].forEach((item) => {
-                res_string += `<tr align="center">
+                    order['customer_details']['orders'].forEach((item) => {
+                        res_string += `<tr align="center">
                                     <td width="45%">` + item['p_name'] + `</td>
                                     <td width="20%">` + item['unit_price'].toFixed(2) + `</td>
                                     <td width="20%">` + item['tax'].toFixed(2) + `</td>
                                     <td width="15%">` + item['quantity'] + `</td>
                                   </tr>`;
-            });
+                    });
 
-            res_string += `</table>
+                    res_string += `</table>
                                   </td>
                                   <td>
                                     <i class="fas fa-file-invoice text-primary" data-toggle="tooltip" title="Get Invoice" style="font-size: 2em;cursor: pointer;" onclick="get_bill('` + order['customer_details']['bill_id'] + `');"></i>
                                   </td>
                               </tr>`;
-        });
-        orders_table.innerHTML = res_string;
-        $('#server_is_busy').css('display', 'none');
+                });
+                offset += size;
+                $('#all-orders').data('offset', offset);
+                $('#all-orders').append(res_string);
+                $('#server_is_busy').css('display', 'none');
+                busy_status = false;
+            } catch(e) {
+                $('#all-orders').data('fetch_status', 'false');
+                $('#server_is_busy').css('display', 'none');
+                busy_status = false;
+            }  
+        },
+        error: function(err) {
+            alert(err);
+            $('#server_is_busy').css('display', 'none');
+            busy_status = false;
+        }
     });
 }
 
+$('#table-holder').scroll(function(){
+    var elem = document.getElementById('table-holder');
+    var diff = elem.scrollHeight - elem.scrollTop;
+    if(Math.floor(diff) == elem.clientHeight) {
+        var fetch_status = $('#all-orders').data('fetch_status');
+        if(fetch_status == "true") {
+            get_all_orders();
+        }
+    }
+});
+
+
+function open_orders_list() {
+    var elem = document.getElementById('table-holder');
+    elem.scrollTop = 0;
+    $('#all-orders').data('fetch_status', 'true');
+    $('#all-orders').data('offset', '0');
+    $('.search-order').css('display', 'none');
+    $('.all-orders-list').css("display", "block");
+    if(!busy_status) {
+        get_all_orders();
+    }
+}
+
+
+$('#search-bill-form').submit(function(e) {
+    $('#server_is_busy').css('display', 'block');
+    e.preventDefault();
+    get_bill($('#bill_id_inp').val());
+    $('#search-bill-form').trigger('reset');
+});
+
+
 function open_search_order() {
+    var elem = document.getElementById('table-holder');
+    elem.scrollTop = 0;
     $('.all-orders-list').css('display', 'none');
     $('.search-order').css('display', 'block');
 }
 
 function get_bill(b_id) {
     $.ajax({
-        url: "fetch_bill.php",
+        url: "services/fetch_bill.php",
         method: "post",
         data: { bill_id: b_id },
         dataType: "text",
@@ -172,13 +229,13 @@ function generate_bill_to_print(data) {
                         <div class="col" id="tax-bill">
                             <div class="p-3 border">
                                 <div class="text-center">
-                                    <h4>Piya Motors</h4>
+                                    <h4><i class="fab fa-opencart"></i> Mini Cart</h4>
                                     <h6><span class="border"> &nbsp; TAX Invoice &nbsp; </span></h6>
                                     <p>
-                                        Nimtala, Ranapur, Daspur - 721212<br>
-                                        Paschim Mednipur, West Bengal, India<br>
-                                        Mobile No - +91-9800619198 / 7872707955<br>
-                                        Email - piyamotor.yamaha@gmail.com
+                                        Address seg1, seg2, seg3 - zip<br>
+                                        District, State, country<br>
+                                        Mobile No - +91-xxxxxxxxxx / xxxxxxxxxx<br>
+                                        Email - example@email.com
                                     </p>
                                 </div>
                                 <div class="row">
@@ -203,13 +260,13 @@ function generate_bill_to_print(data) {
                         <div class="col" id="without-tax-bill">
                             <div class="p-3 border">
                                 <div class="text-center">
-                                    <h4>Piya Motors</h4>
+                                    <h4><i class="fab fa-opencart"></i> Mini Cart</h4>
                                     <h6><span class="border"> &nbsp; Invoice &nbsp; </span></h6>
                                     <p>
-                                        Nimtala, Ranapur, Daspur - 721212<br>
-                                        Paschim Mednipur, West Bengal, India<br>
-                                        Mobile No - +91-9800619198 / 7872707955<br>
-                                        Email - piyamotor.yamaha@gmail.com
+                                        Address seg1, seg2, seg3 - zip<br>
+                                        District, State, country<br>
+                                        Mobile No - +91-xxxxxxxxxx / xxxxxxxxxx<br>
+                                        Email - example@email.com
                                     </p>
                                 </div>
                                 <div class="row">
